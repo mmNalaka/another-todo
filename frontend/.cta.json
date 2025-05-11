@@ -1,0 +1,17 @@
+{
+  "framework": "react",
+  "typescript": true,
+  "projectName": "frontend",
+  "mode": "file-router",
+  "tailwind": true,
+  "packageManager": "pnpm",
+  "toolchain": "eslint+prettier",
+  "variableValues": {},
+  "git": true,
+  "version": 1,
+  "existingAddOns": [
+    "shadcn",
+    "t3env",
+    "tanstack-query"
+  ]
+}
