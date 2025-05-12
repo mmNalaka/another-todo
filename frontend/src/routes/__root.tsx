@@ -1,9 +1,9 @@
 import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
-import TanstackQueryLayout from '../integrations/tanstack-query/layout'
-
 import type { QueryClient } from '@tanstack/react-query'
+
+import TanstackQueryLayout from '@/integrations/tanstack-query/layout'
+import { LocalizationProvider } from '@/providers/localization-provider'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -12,7 +12,9 @@ interface MyRouterContext {
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: () => (
     <>
-      <Outlet />
+      <LocalizationProvider>
+        <Outlet />
+      </LocalizationProvider>
       <TanStackRouterDevtools />
       <TanstackQueryLayout />
     </>

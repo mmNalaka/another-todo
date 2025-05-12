@@ -7,7 +7,7 @@ type TranslationKeys = keyof typeof enTranslations
 type Translations = typeof enTranslations
 
 // Context to hold the translations and locale
-interface LocalizationContextType {
+type LocalizationContextType = {
   t: (key: TranslationKeys) => string
   locale: string
 }
@@ -16,7 +16,7 @@ export const LocalizationContext = createContext<
   LocalizationContextType | undefined
 >(undefined)
 
-interface LocalizationProviderProps {
+type LocalizationProviderProps = {
   children: ReactNode
   locale?: string
 }
