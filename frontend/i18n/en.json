@@ -34,5 +34,11 @@
   "error.required": "This field is required",
   "error.minLength": "Must be at least {0} characters",
   "error.maxLength": "Must be at most {0} characters",
-  "error.invalidFormat": "Invalid format"
+  "error.invalidFormat": "Invalid format",
+
+  "sidebar.title": "TODO App",
+  "sidebar.subtitle": "Get S*** Done!",
+
+  "sidebar.group.general": "General",
+  "sidebar.group.groups": "Groups"
 }
