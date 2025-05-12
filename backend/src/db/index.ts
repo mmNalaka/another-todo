@@ -1,8 +1,8 @@
 import { createClient } from '@libsql/client'
 import { drizzle } from 'drizzle-orm/libsql'
 
-import env from '@/config/env'
-import { usersTable } from '@/db/schemas/user'
+import env from '~/config/env'
+import { usersTable } from '~/db/schemas/user'
 
 // Schema
 const schema = {

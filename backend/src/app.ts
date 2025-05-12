@@ -2,8 +2,8 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { requestId } from 'hono/request-id'
 
-import { corsOptions } from '@/config/cors-cfg'
-import { pinoLogger } from '@/middlewares/pino-logger'
+import { corsOptions } from '~/config/cors'
+import { pinoLogger } from '~/middlewares/pino-logger'
 
 const app = new Hono({
   strict: false,
