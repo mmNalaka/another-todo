@@ -1,5 +1,3 @@
-import type { UUID } from 'node:crypto'
-
 import { eq } from 'drizzle-orm'
 
 import type { NewUser } from '@/db/schemas/users.schema'
@@ -18,15 +16,15 @@ const userReturnSchema = {
 
 export async function getUserByEmail(email: string) {
   return await db
-    .select(userReturnSchema)
+    .select()
     .from(usersTable)
     .where(eq(usersTable.email, email))
     .then((res) => res[0])
 }
 
-export async function getUserById(id: UUID) {
+export async function getUserById(id: string) {
   return await db
-    .select(userReturnSchema)
+    .select()
     .from(usersTable)
     .where(eq(usersTable.id, id))
     .then((res) => res[0])
