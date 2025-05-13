@@ -4,7 +4,11 @@ import { requestId } from 'hono/request-id'
 
 import { corsOptions } from '@/config/cors.config'
 import { pinoLogger } from '@/middlewares/pino-logger.mw'
+import { errorHandler } from '@/middlewares/error-handler.mw'
+
 import globalRoutes from '@/routes/global.routes'
+import tasksRoutes from '@/routes/tasks.router'
+import authRouter from './routes/auth.router'
 
 const app = new Hono({
   strict: false,
@@ -15,14 +19,13 @@ app.use(requestId())
 app.use(pinoLogger())
 app.use(cors(corsOptions))
 
-// Error handler
-app.onError((err, c) => {
-  console.error(err)
-  return c.json({ message: 'Internal Server Error' }, 500)
-})
-
 // Routes
 app.route('/', globalRoutes)
+app.route('/auth', authRouter)
+app.route('/tasks', tasksRoutes)
+
+// Global error handler
+app.use(errorHandler())
 
 export type AppType = typeof app
 export default app
