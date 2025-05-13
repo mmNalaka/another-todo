@@ -21,6 +21,7 @@
     "@hono/zod-validator": "^0.5.0",
     "@libsql/client": "^0.14.0",
     "@scalar/hono-api-reference": "^0.5.184",
+    "bcrypt": "^6.0.0",
     "dotenv": "^16.5.0",
     "dotenv-expand": "^12.0.1",
     "drizzle-orm": "^0.33.0",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.16.0",
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^22.13.10",
     "@types/pg": "^8.15.1",
     "cross-env": "^7.0.3",
