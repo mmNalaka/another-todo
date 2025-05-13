@@ -1,7 +1,11 @@
 import { zValidator } from '@hono/zod-validator'
 import bcrypt from 'bcrypt'
 
-import { createNewUser, getUserByEmail } from '@/db/repositories/user.repo'
+import {
+  createNewUser,
+  getUserByEmail,
+  getUserById,
+} from '@/db/repositories/user.repo'
 import { authenticatedMiddleware } from '@/middlewares/authenticated.mw'
 import { tokenService } from '@/services/token.service'
 import { createErrorResponse } from '@/utils/error.utils'
@@ -73,14 +77,33 @@ export const authSignHandler = factory.createHandlers(
 export const authMeHandler = factory.createHandlers(
   authenticatedMiddleware(),
   async (c) => {
-    const payload = c.get('jwtPayload')
-    const user = await getUserByEmail(payload?.user)
+    // Get user info from context (already set by the middleware)
+    const userInfo = c.get('user' as any)
+
+    if (!userInfo || !userInfo.id) {
+      return createErrorResponse(
+        c,
+        'UNAUTHORIZED',
+        'User information not found',
+      )
+    }
+
+    // Get user details from database
+    const user = await getUserById(userInfo.id)
+
+    // Check if user exists
+    if (!user) {
+      return createErrorResponse(c, 'NOT_FOUND', 'User not found')
+    }
+
+    // Remove sensitive data
+    const { hashedPassword, ...userData } = user
 
     return c.json({
       success: true,
       message: 'Success',
       data: {
-        user,
+        user: userData,
       },
     })
   },
