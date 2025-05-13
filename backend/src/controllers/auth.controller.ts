@@ -2,6 +2,7 @@ import { zValidator } from '@hono/zod-validator'
 import bcrypt from 'bcrypt'
 
 import { createNewUser, getUserByEmail } from '@/db/repositories/user.repo'
+import { authenticatedMiddleware } from '@/middlewares/authenticated.mw'
 import { tokenService } from '@/services/token.service'
 import { createErrorResponse } from '@/utils/error.utils'
 import { factory } from '@/utils/hono.utils'
@@ -64,6 +65,23 @@ export const authSignHandler = factory.createHandlers(
       success: true,
       message: 'OK',
       data: tokenData,
+    })
+  },
+)
+
+// GET /me - Get current user
+export const authMeHandler = factory.createHandlers(
+  authenticatedMiddleware(),
+  async (c) => {
+    const payload = c.get('jwtPayload')
+    const user = await getUserByEmail(payload?.user)
+
+    return c.json({
+      success: true,
+      message: 'Success',
+      data: {
+        user,
+      },
     })
   },
 )

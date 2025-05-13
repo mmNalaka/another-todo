@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 
 import {
+  authMeHandler,
   authSignHandler,
   authSignupHandler,
 } from '@/controllers/auth.controller'
@@ -8,6 +9,8 @@ import {
 // /api/auth
 const authRouter = new Hono()
 
+// GET /me - Get current user details
+authRouter.get('/me', ...authMeHandler)
 // POST /signup - Sign up using email and password
 authRouter.post('/signup', ...authSignupHandler)
 // POST /signin - Sign in using email and password
