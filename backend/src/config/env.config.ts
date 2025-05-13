@@ -13,33 +13,23 @@ expand(
   }),
 )
 
-const EnvSchema = z
-  .object({
-    NODE_ENV: z.string().default('development'),
-    PORT: z.coerce.number().default(4000),
-    LOG_LEVEL: z.enum([
-      'fatal',
-      'error',
-      'warn',
-      'info',
-      'debug',
-      'trace',
-      'silent',
-    ]),
-    DATABASE_URL: z.string().url(),
-    DATABASE_AUTH_TOKEN: z.string().optional(),
-  })
-  .superRefine((input, ctx) => {
-    if (input.NODE_ENV === 'production' && !input.DATABASE_AUTH_TOKEN) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.invalid_type,
-        expected: 'string',
-        received: 'undefined',
-        path: ['DATABASE_AUTH_TOKEN'],
-        message: 'Must be set when NODE_ENV is "production"',
-      })
-    }
-  })
+const EnvSchema = z.object({
+  NODE_ENV: z.string().default('development'),
+  PORT: z.coerce.number().default(4000),
+  LOG_LEVEL: z.enum([
+    'fatal',
+    'error',
+    'warn',
+    'info',
+    'debug',
+    'trace',
+    'silent',
+  ]),
+  DATABASE_URL: z.string().url(),
+  JWT_SECRET: z.string(),
+  ACCESS_TOKEN_EXPIRY_MINUTES: z.coerce.number().default(15),
+  REFRESH_TOKEN_EXPIRY_DAYS: z.coerce.number().default(30),
+})
 
 export type env = z.infer<typeof EnvSchema>
 
