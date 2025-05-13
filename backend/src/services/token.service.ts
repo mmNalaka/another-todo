@@ -2,10 +2,11 @@ import { addDays, addMinutes } from 'date-fns'
 import { and, eq } from 'drizzle-orm'
 import { sign, verify } from 'hono/jwt'
 
+import type { User } from '@/db/schemas/users.schema'
+
 import env from '@/config/env.config'
 import { db } from '@/db'
 import { refreshTokensTable } from '@/db/schemas/auth.schema'
-import { type User } from '@/db/schemas/users.schema'
 
 interface TokenPayload {
   [key: string]: unknown
@@ -72,7 +73,7 @@ export const tokenService = {
   async verifyAccessToken(token: string): Promise<TokenPayload> {
     try {
       return (await verify(token, env.JWT_SECRET)) as TokenPayload
-    } catch (error) {
+    } catch {
       throw new Error('Invalid access token')
     }
   },
@@ -109,7 +110,7 @@ export const tokenService = {
         id: decoded.userId,
         email: decoded.email,
       })
-    } catch (error) {
+    } catch {
       return null
     }
   },
@@ -122,7 +123,7 @@ export const tokenService = {
         .where(eq(refreshTokensTable.token, token))
 
       return true
-    } catch (error) {
+    } catch {
       return false
     }
   },

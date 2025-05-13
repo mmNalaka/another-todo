@@ -1,5 +1,5 @@
-import { Context } from 'hono'
-import { ContentfulStatusCode } from 'hono/utils/http-status'
+import type { Context } from 'hono'
+import type { ContentfulStatusCode } from 'hono/utils/http-status'
 
 export type ErrorCode =
   // Common
@@ -23,6 +23,7 @@ interface ErrorResponse {
 
 export const errorCodes: Record<
   ErrorCode,
+  // eslint-disable-next-line style/member-delimiter-style
   { status: number; message: string }
 > = {
   // Common

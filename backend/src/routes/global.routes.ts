@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
-import { rootHandler, healthHandler } from '@/controllers/global.controller'
+
+import { healthHandler, rootHandler } from '@/controllers/global.controller'
 
 const globalRoutes = new Hono()
 

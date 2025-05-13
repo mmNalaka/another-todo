@@ -3,11 +3,11 @@ import { cors } from 'hono/cors'
 import { requestId } from 'hono/request-id'
 
 import { corsOptions } from '@/config/cors.config'
-import { pinoLogger } from '@/middlewares/pino-logger.mw'
 import { errorHandler } from '@/middlewares/error-handler.mw'
-
+import { pinoLogger } from '@/middlewares/pino-logger.mw'
 import globalRoutes from '@/routes/global.routes'
 import tasksRoutes from '@/routes/tasks.router'
+
 import authRouter from './routes/auth.router'
 
 const app = new Hono({

@@ -1,5 +1,6 @@
-import { paginationConfig } from '@/config/app.config'
 import { z } from 'zod'
+
+import { paginationConfig } from '@/config/app.config'
 
 export const genericPaginationSchema = z.object({
   page: z.number().min(1).default(1),

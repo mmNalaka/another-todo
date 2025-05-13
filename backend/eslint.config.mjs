@@ -19,6 +19,7 @@ export default antfu(
       'node/prefer-global/process': ['off'],
       'node/no-process-env': ['error'],
       'style/arrow-parens': ['off', 'as-needed'],
+      'style/brace-style': ['off', '1tbs'],
       'perfectionist/sort-imports': [
         'error',
         {

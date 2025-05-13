@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
 
 import {
-  authSignupHandler,
   authSignHandler,
+  authSignupHandler,
 } from '@/controllers/auth.controller'
 
 // /api/auth

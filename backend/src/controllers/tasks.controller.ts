@@ -26,4 +26,3 @@ export const getAllTasksHandler = factory.createHandlers(
 )
 
 // POST /api/tasks - Create a new task
-export const createTaskHandler = factory.createHandlers(async (c) => {})

@@ -1,8 +1,11 @@
-import db from '@/db'
-import { NewUser, usersTable } from '@/db/schemas/users.schema'
 import { eq } from 'drizzle-orm'
 
-export const getUserByEmail = async (email: string) => {
+import type { NewUser } from '@/db/schemas/users.schema'
+
+import db from '@/db'
+import { usersTable } from '@/db/schemas/users.schema'
+
+export async function getUserByEmail(email: string) {
   return await db
     .select()
     .from(usersTable)
@@ -10,7 +13,7 @@ export const getUserByEmail = async (email: string) => {
     .then((res) => res[0])
 }
 
-export const createNewUser = async (data: NewUser) => {
+export async function createNewUser(data: NewUser) {
   return await db
     .insert(usersTable)
     .values(data)
