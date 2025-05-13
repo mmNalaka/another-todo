@@ -1,23 +1,17 @@
-import { createClient } from '@libsql/client'
-import { drizzle } from 'drizzle-orm/libsql'
+import { drizzle } from 'drizzle-orm/node-postgres'
+import { Pool } from 'pg'
 
-import env from '~/config/env'
-import { usersTable } from '~/db/schemas/user'
+import env from '@/config/env.config'
 
-// Schema
-const schema = {
-  users: usersTable,
-} as const
-
-// Create client
-const client = createClient({
-  url: env.DATABASE_URL,
-  authToken: env.DATABASE_AUTH_TOKEN,
+// Create pool
+export const pgPool = new Pool({
+  connectionString: env.DATABASE_URL,
+  log(...messages) {
+    console.warn('Postgres:', ...messages)
+  },
 })
 
 // Create db
-const db = drizzle(client, {
-  schema,
-})
+export const db = drizzle(pgPool)
 
 export default db
