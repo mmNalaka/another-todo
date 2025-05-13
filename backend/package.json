@@ -22,6 +22,7 @@
     "@libsql/client": "^0.14.0",
     "@scalar/hono-api-reference": "^0.5.184",
     "bcrypt": "^6.0.0",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
     "dotenv-expand": "^12.0.1",
     "drizzle-orm": "^0.33.0",
