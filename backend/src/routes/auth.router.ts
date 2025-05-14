@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 
 import {
   authMeHandler,
+  authRefreshHandler,
   authSignHandler,
   authSignupHandler,
 } from '@/controllers/auth.controller'
@@ -15,5 +16,7 @@ authRouter.get('/me', ...authMeHandler)
 authRouter.post('/signup', ...authSignupHandler)
 // POST /signin - Sign in using email and password
 authRouter.post('/signin', ...authSignHandler)
+// POST /refresh - Refresh access token using refresh token
+authRouter.post('/refresh', ...authRefreshHandler)
 
 export default authRouter

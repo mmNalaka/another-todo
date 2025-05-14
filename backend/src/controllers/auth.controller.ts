@@ -11,6 +11,7 @@ import { tokenService } from '@/services/token.service'
 import { createErrorResponse } from '@/utils/error.utils'
 import { factory } from '@/utils/hono.utils'
 import {
+  refreshTokenBodySchema,
   signInBodySchema,
   signUpBodySchema,
 } from '@/validations/auth.validations'
@@ -108,6 +109,30 @@ export const authMeHandler = factory.createHandlers(
       data: {
         user: userData,
       },
+    })
+  },
+)
+
+// POST /refresh - Refresh access token
+export const authRefreshHandler = factory.createHandlers(
+  zValidator('json', refreshTokenBodySchema),
+  async (c) => {
+    // Get refresh token from request body
+    const { refreshToken } = c.req.valid('json')
+    if (!refreshToken) {
+      return createErrorResponse(c, 'UNAUTHORIZED', 'Refresh token is required')
+    }
+
+    // Verify and refresh access token
+    const tokenData = await tokenService.refreshAccessToken(refreshToken)
+    if (!tokenData) {
+      return createErrorResponse(c, 'UNAUTHORIZED', 'Invalid refresh token')
+    }
+
+    return c.json({
+      success: true,
+      message: 'OK',
+      data: tokenData,
     })
   },
 )
