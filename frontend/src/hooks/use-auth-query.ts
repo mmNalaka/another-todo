@@ -77,7 +77,7 @@ export function useAuthQuery() {
   }
 
   return {
-    user: userQuery.data as User | null,
+    user: userQuery.data?.data.user as User | null,
     isLoading: userQuery.isLoading,
     isAuthenticated: !!userQuery.data,
     signIn: signInMutation.mutate,

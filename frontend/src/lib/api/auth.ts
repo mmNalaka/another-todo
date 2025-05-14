@@ -24,6 +24,18 @@ export interface User {
   id: string
   email: string
   name: string
+  avatar?: string
+  emailVerified: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export type UserResponse = {
+  success: boolean
+  message: string
+  data: {
+    user: User
+  }
 }
 
 const API_URL = env.VITE_API_URL
@@ -79,7 +91,7 @@ export const authApi = {
     return response.json()
   },
 
-  async getUser(token: string): Promise<User> {
+  async getUser(token: string): Promise<UserResponse> {
     const response = await fetch(`${API_URL}/auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
