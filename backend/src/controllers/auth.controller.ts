@@ -10,11 +10,14 @@ import { authenticatedMiddleware } from '@/middlewares/authenticated.mw'
 import { tokenService } from '@/services/token.service'
 import { createErrorResponse } from '@/utils/error.utils'
 import { factory } from '@/utils/hono.utils'
-import { signInSchema, signUpSchema } from '@/validations/auth.validations'
+import {
+  signInBodySchema,
+  signUpBodySchema,
+} from '@/validations/auth.validations'
 
 // GET /signup - Signup using email and password
 export const authSignupHandler = factory.createHandlers(
-  zValidator('json', signUpSchema),
+  zValidator('json', signUpBodySchema),
   async (c) => {
     const data = c.req.valid('json')
 
@@ -44,7 +47,7 @@ export const authSignupHandler = factory.createHandlers(
 
 // POST /signin - Signin using email and password
 export const authSignHandler = factory.createHandlers(
-  zValidator('json', signInSchema),
+  zValidator('json', signInBodySchema),
   async (c) => {
     const data = c.req.valid('json')
 
