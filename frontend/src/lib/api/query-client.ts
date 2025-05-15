@@ -1,17 +1,6 @@
-import { QueryClient } from '@tanstack/react-query'
 import { env } from '@/env'
-
-type Headers = Record<string, any>
-
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 60 * 1000, // 1 minute
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-})
+import { authApi } from './auth'
+import { queryClient } from '@/integrations/tanstack-query/root-provider'
 
 // Create a function to get authenticated fetch for use with React Query
 export async function authenticatedFetch<T>(
@@ -23,9 +12,9 @@ export async function authenticatedFetch<T>(
 
   const accessToken = localStorage.getItem('accessToken')
 
-  const headers: Headers = {
+  const headers = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...(options.headers as any),
   }
 
   if (accessToken) {
@@ -44,46 +33,53 @@ export async function authenticatedFetch<T>(
 
     if (refreshToken) {
       try {
-        const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ refreshToken }),
+        const tokens = await authApi.refreshToken(refreshToken)
+        // Update tokens in localStorage
+        localStorage.setItem('accessToken', tokens.data.accessToken)
+        localStorage.setItem('refreshToken', tokens.data.refreshToken)
+
+        // Retry the original request with the new token
+        headers['Authorization'] = `Bearer ${tokens.data.accessToken}`
+
+        const retryResponse = await fetch(fullUrl, {
+          ...options,
+          headers,
         })
 
-        if (refreshResponse.ok) {
-          const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-            await refreshResponse.json()
-
-          // Update tokens in localStorage
-          localStorage.setItem('accessToken', newAccessToken)
-          localStorage.setItem('refreshToken', newRefreshToken)
-
-          // Retry the original request with the new token
-          headers['Authorization'] = `Bearer ${newAccessToken}`
-
-          const retryResponse = await fetch(fullUrl, {
-            ...options,
-            headers,
-          })
-
-          if (retryResponse.ok) {
-            return retryResponse.json()
+        if (retryResponse.ok) {
+          return retryResponse.json()
+        } else {
+          // Handle failed retry - only clear tokens if it's a 401
+          if (retryResponse.status === 401) {
+            localStorage.removeItem('accessToken')
+            localStorage.removeItem('refreshToken')
+            queryClient.setQueryData(['user'], null)
+            queryClient.invalidateQueries({ queryKey: ['user'] })
+            window.location.href = '/login'
+            throw new Error('Session expired. Please login again.')
           }
+
+          // For other errors, throw without clearing tokens
+          const errorData = await retryResponse.json().catch(() => ({}))
+          throw new Error(errorData.message || 'Something went wrong')
         }
       } catch (error) {
-        // If refresh fails, clear tokens
-        localStorage.removeItem('accessToken')
-        localStorage.removeItem('refreshToken')
-        queryClient.setQueryData(['user'], null)
-        queryClient.invalidateQueries({ queryKey: ['user'] })
-        window.location.href = '/login'
-        throw new Error('Session expired. Please login again.')
+        // Check if error is from refresh token request and is a 401
+        if (error instanceof Error && error.message.includes('Unauthorized')) {
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
+          queryClient.setQueryData(['user'], null)
+          queryClient.invalidateQueries({ queryKey: ['user'] })
+          window.location.href = '/login'
+          throw new Error('Session expired. Please login again.')
+        }
+
+        // For other errors, just throw without clearing tokens
+        throw error
       }
     }
 
-    // If no refresh token or refresh failed, redirect to login
+    // If no refresh token or
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
     queryClient.setQueryData(['user'], null)
