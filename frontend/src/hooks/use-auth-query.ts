@@ -27,10 +27,17 @@ export function useAuthQuery() {
             localStorage.setItem('refreshToken', tokens.data.accessToken)
 
             return await authApi.getUser(tokens.data.accessToken)
-          } catch (refreshError) {
-            // Refresh failed, clear tokens
-            localStorage.removeItem('accessToken')
-            localStorage.removeItem('refreshToken')
+          } catch (refreshError: any) {
+            // Only clear tokens if it's an unauthorized error (401)
+            // This way we keep tokens if server is down or other network issues
+            console.log(refreshError)
+            if (
+              refreshError.status === 401 ||
+              refreshError.message?.tolowercase().includes('Unauthorized')
+            ) {
+              localStorage.removeItem('accessToken')
+              localStorage.removeItem('refreshToken')
+            }
             return null
           }
         }
