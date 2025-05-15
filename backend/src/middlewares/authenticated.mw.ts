@@ -3,6 +3,11 @@ import type { MiddlewareHandler } from 'hono/types'
 import { tokenService } from '@/services/token.service'
 import { createErrorResponse } from '@/utils/error.utils'
 
+export type AuthenticatedUser = {
+  id: string
+  email: string
+}
+
 export function authenticatedMiddleware(): MiddlewareHandler {
   return async (c, next) => {
     try {
@@ -37,7 +42,7 @@ export function authenticatedMiddleware(): MiddlewareHandler {
       c.set('user', {
         id: payload.userId,
         email: payload.email,
-      })
+      } as AuthenticatedUser)
 
       await next()
     } catch (error: any) {

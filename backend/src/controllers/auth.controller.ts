@@ -1,6 +1,8 @@
 import { zValidator } from '@hono/zod-validator'
 import bcrypt from 'bcrypt'
 
+import type { AuthenticatedUser } from '@/middlewares/authenticated.mw'
+
 import {
   createNewUser,
   getUserByEmail,
@@ -82,7 +84,7 @@ export const authMeHandler = factory.createHandlers(
   authenticatedMiddleware(),
   async (c) => {
     // Get user info from context (already set by the middleware)
-    const userInfo = c.get('user' as any)
+    const userInfo = c.get('user' as any) as AuthenticatedUser
 
     if (!userInfo || !userInfo.id) {
       return createErrorResponse(
@@ -133,6 +135,29 @@ export const authRefreshHandler = factory.createHandlers(
       success: true,
       message: 'OK',
       data: tokenData,
+    })
+  },
+)
+
+// GET /signout - Signout
+export const authSignoutHandler = factory.createHandlers(
+  authenticatedMiddleware(),
+  async (c) => {
+    // Get user info from context (already set by the middleware)
+    const userInfo = c.get('user' as any) as AuthenticatedUser
+
+    if (!userInfo || !userInfo.id) {
+      return createErrorResponse(c, 'UNAUTHORIZED')
+    }
+
+    // Revoke refresh tokens
+    const isRevoked = await tokenService.revokeRefreshToken(userInfo.id)
+    if (!isRevoked) {
+      return createErrorResponse(c, 'INTERNAL_SERVER_ERROR')
+    }
+    return c.json({
+      success: true,
+      message: 'Signed out successfully',
     })
   },
 )
