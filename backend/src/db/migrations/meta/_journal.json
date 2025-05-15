@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1747132275851,
-      "tag": "0000_init-user-and-tasks",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1747145119314,
-      "tag": "0001_init-auth-refres-token-table",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1747165090432,
-      "tag": "0002_update-user-table",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1747257448076,
-      "tag": "0003_update_tasks_related_tables",
+      "when": 1747306398347,
+      "tag": "0000_init_auth_and_task_db_tables",
       "breakpoints": true
     }
   ]

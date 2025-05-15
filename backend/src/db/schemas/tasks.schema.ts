@@ -74,17 +74,6 @@ export const tasksTable = pgTable(
   }),
 )
 // Tasks relations
-export const tasksListsRelations = relations(
-  tasksListsTable,
-  ({ many, one }) => ({
-    tasks: many(tasksTable),
-    parentTasks: one(tasksTable, {
-      fields: [tasksListsTable.id],
-      references: [tasksTable.parentTaskId],
-      relationName: 'parentTasks',
-    }),
-  }),
-)
 
 // list_collaborators table
 export const listCollaborators = pgTable(
