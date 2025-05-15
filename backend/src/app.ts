@@ -5,8 +5,10 @@ import { requestId } from 'hono/request-id'
 import { corsOptions } from '@/config/cors.config'
 import { errorHandler } from '@/middlewares/error-handler.mw'
 import { pinoLogger } from '@/middlewares/pino-logger.mw'
+
 import globalRoutes from '@/routes/global.routes'
 import tasksRoutes from '@/routes/tasks.router'
+import listsRoutes from '@/routes/lists.router'
 
 import authRouter from './routes/auth.router'
 
@@ -23,6 +25,7 @@ app.use(cors(corsOptions))
 app.route('/', globalRoutes)
 app.route('/auth', authRouter)
 app.route('/tasks', tasksRoutes)
+app.route('/lists', listsRoutes)
 
 // Global error handler
 app.use(errorHandler())
