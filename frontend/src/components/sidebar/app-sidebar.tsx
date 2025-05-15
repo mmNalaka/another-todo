@@ -12,8 +12,7 @@ import {
 } from 'lucide-react'
 
 import { NavMain } from '@/components/sidebar/nav-main'
-import { NavProjects } from '@/components/sidebar/nav-projects'
-import { NavSecondary } from '@/components/sidebar/nav-secondary'
+import { NavTaskLists } from '@/components/sidebar/nav-lists'
 import { NavUser } from '@/components/sidebar/nav-user'
 import {
   Sidebar,
@@ -33,31 +32,20 @@ const data = {
     avatar: '',
   },
   navMain: [
-    { url: '/home', title: 'Home', icon: Home, count: 11, isActive: true },
+    { url: '/home', title: 'Home', icon: Home },
     {
       url: '/completed',
       title: 'Completed',
       icon: CheckSquare,
-      count: 3,
       isActive: false,
     },
     {
       url: '/today',
       title: 'Today',
       icon: Calendar,
-      count: 4,
       isActive: false,
     },
-    {
-      url: '/personal',
-      title: 'Personal',
-      icon: User,
-      count: 4,
-      isActive: false,
-    },
-    { url: '/work', title: 'Work', icon: Briefcase, count: 3, isActive: false },
   ],
-  navSecondary: [],
   projects: [
     {
       name: 'Grocery List',
@@ -105,11 +93,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavTaskLists projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )
