@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -19,14 +18,7 @@ export function LoginForm({
 }: React.ComponentProps<'div'>) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const { signIn, isAuthenticated, isSigningIn, signInError } = useAuth()
-  const navigate = useNavigate()
-
-  // Redirect if already authenticated
-  if (isAuthenticated) {
-    navigate({ to: '/todos' })
-    return null
-  }
+  const { signIn, isSigningIn, signInError } = useAuth()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

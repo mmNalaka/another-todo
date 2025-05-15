@@ -12,8 +12,10 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
+import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
-import { Route as TodosIndexImport } from './routes/todos/index'
+import { Route as AuthTodosImport } from './routes/_auth.todos'
+import { Route as AuthListsImport } from './routes/_auth.lists'
 
 // Create/Update Routes
 
@@ -23,16 +25,27 @@ const LoginRoute = LoginImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AuthRoute = AuthImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const TodosIndexRoute = TodosIndexImport.update({
-  id: '/todos/',
-  path: '/todos/',
-  getParentRoute: () => rootRoute,
+const AuthTodosRoute = AuthTodosImport.update({
+  id: '/todos',
+  path: '/todos',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthListsRoute = AuthListsImport.update({
+  id: '/lists',
+  path: '/lists',
+  getParentRoute: () => AuthRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -46,6 +59,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthImport
+      parentRoute: typeof rootRoute
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -53,56 +73,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
-    '/todos/': {
-      id: '/todos/'
+    '/_auth/lists': {
+      id: '/_auth/lists'
+      path: '/lists'
+      fullPath: '/lists'
+      preLoaderRoute: typeof AuthListsImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/todos': {
+      id: '/_auth/todos'
       path: '/todos'
       fullPath: '/todos'
-      preLoaderRoute: typeof TodosIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthTodosImport
+      parentRoute: typeof AuthImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface AuthRouteChildren {
+  AuthListsRoute: typeof AuthListsRoute
+  AuthTodosRoute: typeof AuthTodosRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthListsRoute: AuthListsRoute,
+  AuthTodosRoute: AuthTodosRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
-  '/todos': typeof TodosIndexRoute
+  '/lists': typeof AuthListsRoute
+  '/todos': typeof AuthTodosRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
-  '/todos': typeof TodosIndexRoute
+  '/lists': typeof AuthListsRoute
+  '/todos': typeof AuthTodosRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/_auth': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
-  '/todos/': typeof TodosIndexRoute
+  '/_auth/lists': typeof AuthListsRoute
+  '/_auth/todos': typeof AuthTodosRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/todos'
+  fullPaths: '/' | '' | '/login' | '/lists' | '/todos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/todos'
-  id: '__root__' | '/' | '/login' | '/todos/'
+  to: '/' | '' | '/login' | '/lists' | '/todos'
+  id: '__root__' | '/' | '/_auth' | '/login' | '/_auth/lists' | '/_auth/todos'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRouteWithChildren
   LoginRoute: typeof LoginRoute
-  TodosIndexRoute: typeof TodosIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRouteWithChildren,
   LoginRoute: LoginRoute,
-  TodosIndexRoute: TodosIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -116,18 +161,30 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/login",
-        "/todos/"
+        "/_auth",
+        "/login"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
+    "/_auth": {
+      "filePath": "_auth.tsx",
+      "children": [
+        "/_auth/lists",
+        "/_auth/todos"
+      ]
+    },
     "/login": {
       "filePath": "login.tsx"
     },
-    "/todos/": {
-      "filePath": "todos/index.tsx"
+    "/_auth/lists": {
+      "filePath": "_auth.lists.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/todos": {
+      "filePath": "_auth.todos.tsx",
+      "parent": "/_auth"
     }
   }
 }

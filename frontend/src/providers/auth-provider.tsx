@@ -3,7 +3,7 @@ import { createContext, useContext } from 'react'
 import type { SignInCredentials, SignUpCredentials, User } from '@/lib/api/auth'
 import { useAuthQuery } from '@/hooks/use-auth-query'
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
   isLoading: boolean
@@ -16,7 +16,7 @@ interface AuthContextType {
   signUpError: Error | null
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const {

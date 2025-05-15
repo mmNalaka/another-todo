@@ -1,6 +1,7 @@
 import { Folder, MoreHorizontal, Share, Trash2 } from 'lucide-react'
 
-import type { ListResp } from '@/lib/api/api.types'
+import { Link } from '@tanstack/react-router'
+import type { ListResp } from '@/lib/types'
 
 import { CreateListDialog } from '@/components/todo/create-list-dialog'
 import {
@@ -54,9 +55,9 @@ export function NavTaskLists() {
           data.data.map((item) => (
             <SidebarMenuItem key={item.id}>
               <SidebarMenuButton asChild>
-                <a href={item.id}>
+                <Link to="/lists">
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

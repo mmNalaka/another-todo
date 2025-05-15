@@ -48,5 +48,7 @@
   "lists.create.description": "Lists help you group related tasks by project, category, or priority so you stay focused and organized.",
   "list.create.form.title.label": "List Title",
   "list.create.form.title.placeholder": "Enter list title",
-  "list.create.form.submit": "Create List"
+  "list.create.form.submit": "Create List",
+
+  "tasks.app.greeting": "Greetings"
 }

@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 
 import * as TanstackQuery from '@/integrations/tanstack-query/root-provider.tsx'
+import { AuthProvider, useAuth } from '@/providers/auth-provider'
+import { LocalizationProvider } from '@/providers/localization-provider'
 import { routeTree } from '@/routeTree.gen'
 import reportWebVitals from '@/reportWebVitals.ts'
 
@@ -13,6 +15,7 @@ const router = createRouter({
   routeTree,
   context: {
     ...TanstackQuery.getContext(),
+    auth: undefined,
   },
   defaultPreload: 'intent',
   scrollRestoration: true,
@@ -27,14 +30,30 @@ declare module '@tanstack/react-router' {
   }
 }
 
+function InnerApp() {
+  const auth = useAuth()
+  return <RouterProvider router={router} context={{ auth }} />
+}
+
+function App() {
+  return (
+    <LocalizationProvider>
+      <AuthProvider>
+        <InnerApp />
+      </AuthProvider>
+    </LocalizationProvider>
+  )
+}
+
 // Render the app
 const rootElement = document.getElementById('app')
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
+
   root.render(
     <StrictMode>
       <TanstackQuery.Provider>
-        <RouterProvider router={router} />
+        <App />
       </TanstackQuery.Provider>
     </StrictMode>,
   )

@@ -1,5 +1,6 @@
 import { ChevronsUpDown, LogOut } from 'lucide-react'
 
+import { useNavigate } from '@tanstack/react-router'
 import { Skeleton } from '../ui/skeleton'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -23,6 +24,15 @@ export function NavUser() {
   const { t } = useLocalization()
   const { isMobile } = useSidebar()
   const { isLoading, user, signOut } = useAuth()
+  const navigate = useNavigate()
+
+  const handleSignout = () => {
+    signOut()
+    // Call navigate with a delay, let the signout finish first.
+    setTimeout(() => {
+      navigate({ to: '/login' })
+    }, 100)
+  }
 
   if (!user && isLoading) {
     return (
@@ -85,7 +95,7 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={signOut}>
+            <DropdownMenuItem onClick={handleSignout}>
               <LogOut />
               <span className="ml-2">{t('generic.logout')}</span>
             </DropdownMenuItem>

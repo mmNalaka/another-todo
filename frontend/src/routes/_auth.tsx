@@ -1,5 +1,5 @@
 import { Separator } from '@radix-ui/react-separator'
-import { createFileRoute } from '@tanstack/react-router'
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import { AppSidebar } from '@/components/sidebar/app-sidebar'
 import {
   Breadcrumb,
@@ -15,11 +15,21 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 
-export const Route = createFileRoute('/todos/')({
-  component: RouteComponent,
+export const Route = createFileRoute('/_auth')({
+  beforeLoad: ({ context, location }) => {
+    if (!context.auth?.isAuthenticated) {
+      throw redirect({
+        to: '/login',
+        search: {
+          redirect: location.href,
+        },
+      })
+    }
+  },
+  component: AuthenticatedLayout,
 })
 
-function RouteComponent() {
+function AuthenticatedLayout() {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -31,26 +41,19 @@ function RouteComponent() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="#">Todo Application</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                  <BreadcrumbPage>My Tasks</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-          </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-        </div>
+        <main className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <Outlet />
+        </main>
       </SidebarInset>
     </SidebarProvider>
   )

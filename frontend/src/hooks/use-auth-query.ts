@@ -1,12 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from '@tanstack/react-router'
 
 import type { SignInCredentials, SignUpCredentials, User } from '@/lib/api/auth'
 import { authApi } from '@/lib/api/auth'
 
 export function useAuthQuery() {
   const queryClient = useQueryClient()
-  const navigate = useNavigate()
 
   // Query to get the current user
   const userQuery = useQuery({
@@ -56,7 +54,6 @@ export function useAuthQuery() {
 
       const userData = await authApi.getUser(data.data.accessToken)
       queryClient.setQueryData(['user'], userData)
-      navigate({ to: '/todos' })
     },
   })
 
@@ -69,7 +66,6 @@ export function useAuthQuery() {
 
       const userData = await authApi.getUser(data.data.accessToken)
       queryClient.setQueryData(['user'], userData)
-      navigate({ to: '/todos' })
     },
   })
 
@@ -88,11 +84,6 @@ export function useAuthQuery() {
       localStorage.removeItem('refreshToken')
       queryClient.setQueryData(['user'], null)
       queryClient.invalidateQueries({ queryKey: ['user'] })
-
-      // Navigate after a short delay to ensure the sign out is completed
-      setTimeout(() => {
-        navigate({ to: '/login' })
-      }, 100)
     }
   }
 
