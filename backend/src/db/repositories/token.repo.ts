@@ -42,3 +42,12 @@ export async function deleteRefreshToken(token: string) {
     .delete(refreshTokensTable)
     .where(eq(refreshTokensTable.token, token))
 }
+
+/**
+ * Delete all refresh tokens for a user from the database
+ */
+export async function deleteAllRefreshTokens(userId: string) {
+  return await db
+    .delete(refreshTokensTable)
+    .where(eq(refreshTokensTable.userId, userId))
+}

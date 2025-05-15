@@ -5,7 +5,7 @@ import type { User } from '@/db/schemas/users.schema'
 
 import env from '@/config/env.config'
 import {
-  deleteRefreshToken,
+  deleteAllRefreshTokens,
   getRefreshToken,
   storeRefreshToken,
 } from '@/db/repositories/token.repo'
@@ -105,9 +105,9 @@ export const tokenService = {
   },
 
   //  Revoke a refresh token
-  async revokeRefreshToken(token: string): Promise<boolean> {
+  async revokeRefreshToken(userId: string): Promise<boolean> {
     try {
-      await deleteRefreshToken(token)
+      await deleteAllRefreshTokens(userId)
       return true
     } catch {
       return false
