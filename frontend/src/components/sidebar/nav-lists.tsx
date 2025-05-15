@@ -18,7 +18,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 
-export function NavProjects({
+export function NavTaskLists({
   projects,
 }: {
   projects: Array<{
@@ -31,7 +31,7 @@ export function NavProjects({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Projects</SidebarGroupLabel>
+      <SidebarGroupLabel className="justify-between">Lists</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
@@ -62,7 +62,7 @@ export function NavProjects({
                   <span>Share Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem variant="destructive">
                   <Trash2 className="text-muted-foreground" />
                   <span>Delete Project</span>
                 </DropdownMenuItem>
