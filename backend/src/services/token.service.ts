@@ -1,12 +1,14 @@
 import { addDays, addMinutes } from 'date-fns'
-import { and, eq } from 'drizzle-orm'
 import { sign, verify } from 'hono/jwt'
 
 import type { User } from '@/db/schemas/users.schema'
 
 import env from '@/config/env.config'
-import { db } from '@/db'
-import { refreshTokensTable } from '@/db/schemas/auth.schema'
+import {
+  deleteRefreshToken,
+  getRefreshToken,
+  storeRefreshToken,
+} from '@/db/repositories/token.repo'
 
 interface TokenPayload {
   [key: string]: unknown
@@ -56,11 +58,7 @@ export const tokenService = {
     )
 
     // Store refresh token in database
-    await db.insert(refreshTokensTable).values({
-      userId: user.id,
-      token: refreshToken,
-      expiresAt: refreshTokenExpiry,
-    })
+    await storeRefreshToken(user.id, refreshToken, refreshTokenExpiry)
 
     return {
       accessToken,
@@ -90,16 +88,7 @@ export const tokenService = {
       )) as TokenPayload
 
       // Check if token exists in database and is not expired
-      const storedToken = await db
-        .select()
-        .from(refreshTokensTable)
-        .where(
-          and(
-            eq(refreshTokensTable.token, refreshToken),
-            eq(refreshTokensTable.userId, decoded.userId),
-          ),
-        )
-        .then((res) => res[0])
+      const storedToken = await getRefreshToken(refreshToken, decoded.userId)
 
       if (!storedToken) {
         return null
@@ -118,10 +107,7 @@ export const tokenService = {
   //  Revoke a refresh token
   async revokeRefreshToken(token: string): Promise<boolean> {
     try {
-      await db
-        .delete(refreshTokensTable)
-        .where(eq(refreshTokensTable.token, token))
-
+      await deleteRefreshToken(token)
       return true
     } catch {
       return false
