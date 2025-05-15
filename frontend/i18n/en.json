@@ -12,6 +12,7 @@
   "generic.login": "Login",
   "generic.logout": "Logout",
   "generic.register": "Register",
+  "generic.createNew": "Create New",
 
   "todo.title": "Todo List",
   "todo.add": "Add Task",
@@ -39,6 +40,13 @@
   "sidebar.title": "TODO App",
   "sidebar.subtitle": "Get S*** Done!",
 
-  "sidebar.group.general": "General",
-  "sidebar.group.groups": "Groups"
+  "sidebar.group.private": "General",
+  "sidebar.group.shared": "Shared",
+
+  "lists.title": "Lists",
+  "lists.create.list.label": "Create new List",
+  "lists.create.description": "Lists help you group related tasks by project, category, or priority so you stay focused and organized.",
+  "list.create.form.title.label": "List Title",
+  "list.create.form.title.placeholder": "Enter list title",
+  "list.create.form.submit": "Create List"
 }
