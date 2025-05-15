@@ -9,9 +9,5 @@
   "variableValues": {},
   "git": true,
   "version": 1,
-  "existingAddOns": [
-    "shadcn",
-    "t3env",
-    "tanstack-query"
-  ]
+  "existingAddOns": ["shadcn", "t3env", "tanstack-query"]
 }

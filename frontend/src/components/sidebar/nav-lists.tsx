@@ -1,5 +1,8 @@
 import { Folder, MoreHorizontal, Share, Trash2 } from 'lucide-react'
 
+import type { ListResp } from '@/lib/api/api.types'
+
+import { CreateListDialog } from '@/components/todo/create-list-dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,10 +19,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { useLocalization } from '@/hooks/use-localization'
 import { useApiQuery } from '@/hooks/use-api-query'
-import type { ListResp } from '@/lib/api/api.types'
-import { CreateListDialog } from '../todo/create-list-dialog'
+import { useLocalization } from '@/hooks/use-localization'
 
 export function NavTaskLists() {
   const { t } = useLocalization()
@@ -27,7 +28,7 @@ export function NavTaskLists() {
 
   const queryKey = ['lists']
   const { data, isLoading, error } = useApiQuery<ListResp>(queryKey, '/lists')
-  const shouldShowLoading = isLoading || (!isLoading && error)
+  const shouldShowLoading = isLoading || error
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">

@@ -26,7 +26,7 @@ export function CreateListDialog(props: CreateListDialogProps) {
   const [newListName, setNewListName] = useState('')
 
   const createListMutation = useApiMutation<any, any>('/lists', {
-    onSuccess: async () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lists'] })
       setNewListName('')
       setIsListDialogOpen(false)

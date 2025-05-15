@@ -26,7 +26,7 @@ export interface ErrorResponse {
   }
 }
 
-export type ListResp = PaginatedSuccessResponse<List[]>
+export type ListResp = PaginatedSuccessResponse<Array<List>>
 export type List = {
   createdAt: string
   id: string

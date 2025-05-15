@@ -1,14 +1,15 @@
 import {
-  useQuery,
+  
+  
   useMutation,
-  type UseQueryOptions,
-  type UseMutationOptions,
+  useQuery
 } from '@tanstack/react-query'
+import type {UseMutationOptions, UseQueryOptions} from '@tanstack/react-query';
 import { authenticatedFetch } from '@/lib/api/query-client'
 
 // Hook for GET requests
 export function useApiQuery<TData>(
-  queryKey: string[],
+  queryKey: Array<string>,
   url: string,
   options?: Omit<UseQueryOptions<TData, Error>, 'queryKey' | 'queryFn'>,
 ) {

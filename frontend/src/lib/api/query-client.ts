@@ -1,5 +1,5 @@
-import { env } from '@/env'
 import { authApi } from './auth'
+import { env } from '@/env'
 import { queryClient } from '@/integrations/tanstack-query/root-provider'
 
 // Create a function to get authenticated fetch for use with React Query
