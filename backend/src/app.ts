@@ -5,12 +5,10 @@ import { requestId } from 'hono/request-id'
 import { corsOptions } from '@/config/cors.config'
 import { errorHandler } from '@/middlewares/error-handler.mw'
 import { pinoLogger } from '@/middlewares/pino-logger.mw'
-
+import authRouter from '@/routes/auth.router'
 import globalRoutes from '@/routes/global.routes'
-import tasksRoutes from '@/routes/tasks.router'
 import listsRoutes from '@/routes/lists.router'
-
-import authRouter from './routes/auth.router'
+import tasksRoutes from '@/routes/tasks.router'
 
 const app = new Hono({
   strict: false,
