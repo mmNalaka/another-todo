@@ -6,9 +6,6 @@ import env from '@/config/env.config'
 // Create pool
 export const pgPool = new Pool({
   connectionString: env.DATABASE_URL,
-  log(...messages) {
-    console.warn('Postgres:', ...messages)
-  },
 })
 
 // Create db
