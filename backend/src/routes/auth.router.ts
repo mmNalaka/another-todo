@@ -4,6 +4,7 @@ import {
   authMeHandler,
   authRefreshHandler,
   authSignHandler,
+  authSignoutHandler,
   authSignupHandler,
 } from '@/controllers/auth.controller'
 
@@ -18,5 +19,7 @@ authRouter.post('/signup', ...authSignupHandler)
 authRouter.post('/signin', ...authSignHandler)
 // POST /refresh - Refresh access token using refresh token
 authRouter.post('/refresh', ...authRefreshHandler)
+// GET /signout - Sign out
+authRouter.get('/signout', ...authSignoutHandler)
 
 export default authRouter

@@ -24,13 +24,12 @@ export function useAuthQuery() {
           try {
             const tokens = await authApi.refreshToken(refreshToken)
             localStorage.setItem('accessToken', tokens.data.accessToken)
-            localStorage.setItem('refreshToken', tokens.data.accessToken)
+            localStorage.setItem('refreshToken', tokens.data.refreshToken)
 
             return await authApi.getUser(tokens.data.accessToken)
           } catch (refreshError: any) {
             // Only clear tokens if it's an unauthorized error (401)
             // This way we keep tokens if server is down or other network issues
-            console.log(refreshError)
             if (
               refreshError.status === 401 ||
               refreshError.message?.tolowercase().includes('Unauthorized')
@@ -75,12 +74,26 @@ export function useAuthQuery() {
   })
 
   // Function to sign out
-  const signOut = () => {
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('refreshToken')
-    queryClient.setQueryData(['user'], null)
-    queryClient.invalidateQueries({ queryKey: ['user'] })
-    navigate({ to: '/login' })
+  const signOut = async () => {
+    try {
+      const accessToken = localStorage.getItem('accessToken')
+      if (accessToken) {
+        await authApi.signOut(accessToken)
+      }
+    } catch (error) {
+      console.error('Error during sign out:', error)
+    } finally {
+      // Always clean up local storage and redirect
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+      queryClient.setQueryData(['user'], null)
+      queryClient.invalidateQueries({ queryKey: ['user'] })
+
+      // Navigate after a short delay to ensure the sign out is completed
+      setTimeout(() => {
+        navigate({ to: '/login' })
+      }, 100)
+    }
   }
 
   return {

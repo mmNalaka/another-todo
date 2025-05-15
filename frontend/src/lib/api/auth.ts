@@ -104,4 +104,16 @@ export const authApi = {
 
     return response.json()
   },
+
+  async signOut(token: string): Promise<void> {
+    const response = await fetch(`${API_URL}/auth/signout`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    if (!response.ok) {
+      throw new Error('Failed to sign out')
+    }
+  },
 }
