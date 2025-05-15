@@ -1,14 +1,12 @@
 import * as React from 'react'
 import {
   Bot,
-  Briefcase,
   Calendar,
   CheckSquare,
   ClipboardCheck,
   Home,
   Map,
   SquareTerminal,
-  User,
 } from 'lucide-react'
 
 import { NavMain } from '@/components/sidebar/nav-main'
@@ -93,7 +91,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavTaskLists projects={data.projects} />
+        <NavTaskLists />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
