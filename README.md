@@ -5,7 +5,6 @@
 ### Core Features
 
 - [ ] As a user, I can create to-do items, such as a grocery list.
-- [ ] As another user, I can collaborate in real-time with other users so that we can (for example) edit our family shopping list together.
 - [ ] As a user, I can mark to-do items as "done" so that I can avoid clutter and focus on things that are still pending.
 - [ ] As a user, I can filter the to-do list and view items that were marked as done so that I can retrospect on my prior progress.
 
@@ -42,6 +41,7 @@
 
 ### Advanced Features
 
+- [ ] As another user, I can collaborate in real-time with other users so that we can (for example) edit our family shopping list together.
 - [ ] As a user, I can use my VR goggles to edit/browse multiple to-do lists in parallel in 3D space so that I can feel ultra-productive.
 
 ## Project Structure
