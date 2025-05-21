@@ -1,14 +1,18 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
+import { z } from 'zod'
 import { LoginForm } from '@/components/login-form'
 import { useAuth } from '@/providers/auth-provider'
 
+const fallbackRedirect = '/todos'
+
 export const Route = createFileRoute('/login')({
-  beforeLoad: ({ context }) => {
+  validateSearch: z.object({
+    redirect: z.string().optional().catch(''),
+  }),
+  beforeLoad: ({ context, search }) => {
     if (context.auth?.isAuthenticated) {
-      throw redirect({
-        to: '/todos',
-      })
+      throw redirect({ to: search.redirect || fallbackRedirect })
     }
   },
   component: RouteComponent,
@@ -21,7 +25,9 @@ function RouteComponent() {
   // Check if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate({ to: '/todos' })
+      const search = new URLSearchParams(window.location.search)
+      const redirectTo = search.get('redirect') || fallbackRedirect
+      navigate({ to: redirectTo })
     }
   }, [navigate, isAuthenticated])
 
