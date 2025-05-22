@@ -50,5 +50,10 @@
   "list.create.form.title.placeholder": "Enter list title",
   "list.create.form.submit": "Create List",
 
-  "tasks.app.greeting": "Greetings"
+  "tasks.app.greeting": "Greetings",
+  "tasks.create.button": "Create new task",
+  "tasks.empty.message": "No tasks yet",
+  "tasks.empty.create": "Create your first task",
+  "tasks.loading": "Loading tasks...",
+  "tasks.error": "Error loading tasks"
 }
