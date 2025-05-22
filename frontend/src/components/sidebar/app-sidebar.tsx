@@ -1,13 +1,5 @@
 import * as React from 'react'
-import {
-  Bot,
-  Calendar,
-  CheckSquare,
-  ClipboardCheck,
-  Home,
-  Map,
-  SquareTerminal,
-} from 'lucide-react'
+import { Calendar, CheckSquare, ClipboardCheck, Home } from 'lucide-react'
 
 import { NavMain } from '@/components/sidebar/nav-main'
 import { NavTaskLists } from '@/components/sidebar/nav-lists'
@@ -30,35 +22,18 @@ const data = {
     avatar: '',
   },
   navMain: [
-    { url: '/home', title: 'Home', icon: Home },
+    { url: '/todos', title: 'Home', icon: Home },
     {
-      url: '/completed',
+      url: '/todos',
       title: 'Completed',
       icon: CheckSquare,
       isActive: false,
     },
     {
-      url: '/today',
+      url: '/todos',
       title: 'Today',
       icon: Calendar,
       isActive: false,
-    },
-  ],
-  projects: [
-    {
-      name: 'Grocery List',
-      url: '/todos/grocery',
-      icon: Map,
-    },
-    {
-      name: 'Work Tasks',
-      url: '/todos/work',
-      icon: SquareTerminal,
-    },
-    {
-      name: 'Family Shopping',
-      url: '/todos/family',
-      icon: Bot,
     },
   ],
 }
