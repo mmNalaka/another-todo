@@ -37,7 +37,7 @@
   "error.maxLength": "Must be at most {0} characters",
   "error.invalidFormat": "Invalid format",
 
-  "sidebar.title": "TODO App",
+  "sidebar.title": "Just DO!",
   "sidebar.subtitle": "Get S*** Done!",
 
   "sidebar.group.private": "General",
@@ -49,6 +49,22 @@
   "list.create.form.title.label": "List Title",
   "list.create.form.title.placeholder": "Enter list title",
   "list.create.form.submit": "Create List",
+
+  "list.create.form.color": "List Color",
+  "list.create.form.advanced": "Advanced Settings",
+  "list.create.form.schema": "Item Schema",
+  "list.create.form.schema.description": "Define the fields for each item in your to-do list",
+  "list.create.form.field.name": "Field Name",
+  "list.create.form.field.placeholder": "Field name",
+  "list.create.form.field.type": "Type",
+  "list.create.form.field.type.placeholder": "Select type",
+  "list.create.form.field.type.text": "Text",
+  "list.create.form.field.type.number": "Number",
+  "list.create.form.field.type.date": "Date",
+  "list.create.form.field.type.checkbox": "Checkbox",
+  "list.create.form.field.required": "Required",
+  "list.create.form.field.remove": "Remove field",
+  "list.create.form.field.add": "Add Field",
 
   "tasks.app.greeting": "Greetings",
   "tasks.create.button": "Create new task",

@@ -4,6 +4,6 @@ export const appConfig = {
 } as const
 
 export const paginationConfig = {
-  DefaultLimit: 10,
+  DefaultLimit: 50,
   MaxLimit: 100,
 } as const
