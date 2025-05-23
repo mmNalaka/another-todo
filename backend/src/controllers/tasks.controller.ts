@@ -71,6 +71,7 @@ export const createTaskHandler = factory.createHandlers(
 
     const task = await createTask({
       ...data,
+      dueDate: data.dueDate ? new Date(data.dueDate) : null,
       userId: userInfo.id,
     })
 
@@ -98,7 +99,10 @@ export const updateTaskHandler = factory.createHandlers(
       return createErrorResponse(c, 'NOT_FOUND', 'Task not found')
     }
 
-    const updatedTask = await updateTask(id, userInfo.id, data)
+    const updatedTask = await updateTask(id, userInfo.id, {
+      ...data,
+      dueDate: data.dueDate ? new Date(data.dueDate) : null,
+    })
 
     if (!updatedTask) {
       return createErrorResponse(c, 'INTERNAL_SERVER_ERROR')

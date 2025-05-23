@@ -29,13 +29,13 @@ export async function getTaskById(taskId: string, userId: string) {
   return task
 }
 
-export async function createTask(data: NewTask) {
+export async function createTask(data: Omit<NewTask, 'id'>) {
   return await db
     .insert(tasksTable)
     .values({
-      ...data,
+      id: generateTaskId(),
       listId: data.listId || null,
-      ...(!data.id && { id: generateTaskId() }),
+      ...data,
     })
     .returning()
 }

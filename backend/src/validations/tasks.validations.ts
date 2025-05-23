@@ -6,6 +6,10 @@ export const createTaskBodySchema = z.object({
   listId: z.string().optional().nullable().default(null),
   parentTaskId: z.string().optional(),
   value: z.string().optional(),
+  isCompleted: z.boolean().optional(),
+  position: z.number().optional(),
+  dueDate: z.string().optional(),
+  priority: z.enum(['High', 'Medium', 'Low', 'None']).optional(),
 })
 
 export const updateTaskBodySchema = z.object({
@@ -16,6 +20,8 @@ export const updateTaskBodySchema = z.object({
   value: z.string().optional(),
   isCompleted: z.boolean().optional(),
   position: z.number().optional(),
+  dueDate: z.string().optional(),
+  priority: z.enum(['High', 'Medium', 'Low', 'None']).optional(),
 })
 
 export const taskIdParamSchema = z.object({
