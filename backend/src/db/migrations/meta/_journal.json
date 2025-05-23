@@ -15,6 +15,13 @@
       "when": 1747996954276,
       "tag": "0001_update-list-with-color-description-and-schema",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1748009303229,
+      "tag": "0002_update-tasks-with-prio-and-duedate",
+      "breakpoints": true
     }
   ]
 }

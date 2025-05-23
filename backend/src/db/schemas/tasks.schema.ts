@@ -5,6 +5,7 @@ import {
   integer,
   jsonb,
   numeric,
+  pgEnum,
   pgTable,
   primaryKey,
   text,
@@ -37,6 +38,13 @@ export const tasksListsTable = pgTable(
   }),
 )
 
+export const priorityEnum = pgEnum('priority', [
+  'High',
+  'Medium',
+  'Low',
+  'None',
+])
+
 // Tasks table
 export const tasksTable = pgTable(
   'tasks',
@@ -52,7 +60,9 @@ export const tasksTable = pgTable(
     title: text('title').notNull(),
     description: text('description'),
     value: numeric('value'),
+    priority: priorityEnum('priority').default('None'),
     isCompleted: boolean('is_completed').default(false),
+    dueDate: timestamp('due_date'),
     position: integer('position').notNull().default(0),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
@@ -67,6 +77,10 @@ export const tasksTable = pgTable(
       table.listId,
       table.parentTaskId,
       table.position,
+    ),
+    idx_list_completed: index('idx_tasks_list_completed').on(
+      table.listId,
+      table.isCompleted,
     ),
     parentTaskId: foreignKey({
       name: 'parent_task_fk',
@@ -99,6 +113,8 @@ export const listCollaborators = pgTable(
 // Type definitions
 export type TasksList = typeof tasksListsTable.$inferSelect
 export type NewTaskList = typeof tasksListsTable.$inferInsert
+
+export type Priority = (typeof priorityEnum.enumValues)[number]
 
 export type Task = typeof tasksTable.$inferSelect
 export type NewTask = typeof tasksTable.$inferInsert

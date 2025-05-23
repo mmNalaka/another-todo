@@ -1,3 +1,7 @@
+// ==============================
+// API Response Types
+// ==============================
+
 export interface PaginationInfo {
   page: number
   limit: number
@@ -5,15 +9,14 @@ export interface PaginationInfo {
   pages: number
 }
 
-// Interface for success response without pagination
-export interface SuccessResponse<T = any> {
+export interface SuccessResponse<T = unknown> {
   success: true
   message: string
   data: T
 }
 
-// Interface for paginated success response
-export interface PaginatedSuccessResponse<T = any> extends SuccessResponse<T> {
+export interface PaginatedSuccessResponse<T = unknown>
+  extends SuccessResponse<T> {
   pagination: PaginationInfo
 }
 
@@ -22,63 +25,137 @@ export interface ErrorResponse {
   error: {
     message: string
     code: string
-    [key: string]: any
+    [key: string]: unknown
   }
+}
+
+// ==============================
+// User & Auth Types
+// ==============================
+
+export interface User {
+  id: string
+  name: string
+  email: string
+  avatar?: string
+  emailVerified?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Member {
+  id: string
+  name: string
+  avatar?: string
+}
+
+export interface RefreshToken {
+  id: string
+  userId: string
+  token: string
+  expiresAt: string
+  createdAt: string
+  updatedAt: string
+}
+
+// ==============================
+// List Types
+// ==============================
+
+export interface List {
+  id: string
+  title: string
+  description?: string
+  ownerId: string
+  isFrozen: boolean
+  isShared: boolean
+  color?: string
+  schema?: Array<SchemaField>
+  createdAt: string
+  updatedAt: string
+  tasks?: Array<Task>
+  collaborators?: Array<ListCollaborator>
 }
 
 export type ListResp = PaginatedSuccessResponse<Array<List>>
 
-export type List = {
-  createdAt: string
-  id: string
-  isFrozen: boolean
-  isShared: boolean
-  ownerId: string
+export type CreateListInput = {
   title: string
-  updatedAt: string
-  tasks: Array<Task>
-  collaborators: Array<Member>
+  description?: string
+  color?: string
+  schema?: Array<SchemaField>
 }
+
+export interface ListCollaborator {
+  listId: string
+  userId: string
+  role: string
+  user?: User
+}
+
+// ==============================
+// Schema Types
+// ==============================
+
+export type FieldType = 'text' | 'number' | 'date' | 'checkbox'
+
+export interface SchemaField {
+  id: string
+  name: string
+  type: FieldType
+  required: boolean
+}
+
+// ==============================
+// Task Types
+// ==============================
+
+export type Priority = 'High' | 'Medium' | 'Low' | 'None'
 
 export interface Task {
   id: string
-  title: string
-  completed: boolean
+  userId: string
   listId: string | null
-  groupId?: string
-  date: string
-  startTime?: string
-  endTime?: string
-  createdAt: string
+  parentTaskId?: string
+  title: string
   description?: string
-  priority?: 'Low' | 'Medium' | 'High'
-  status?: 'To Do' | 'In Progress' | 'In Research' | 'In Review' | 'Done'
+  value?: number
+  priority: Priority
+  isCompleted: boolean
   dueDate?: string
-  dueDateEnd?: string
-  tags?: Array<string>
-  assignees?: Array<string>
-  subtasks?: Array<Subtask>
-  activities?: Array<Activity>
-  starred?: boolean
+  position: number
+  createdAt: string
+  updatedAt: string
+  subtasks?: Array<Task>
 }
 
-export interface Subtask {
-  id: string
+export type CreateTaskInput = {
   title: string
-  completed: boolean
-  createdAt: string
+  description?: string
+  listId?: string
+  parentTaskId?: string
+  value?: number
+  priority?: Priority
+  dueDate?: string
+  position?: number
 }
+
+// ==============================
+// Activity Types
+// ==============================
+
+export type ActivityType =
+  | 'status_change'
+  | 'comment'
+  | 'reaction'
+  | 'file_upload'
+  | 'creation'
+  | 'subtask_added'
+  | 'subtask_completed'
 
 export interface Activity {
   id: string
-  type:
-    | 'status_change'
-    | 'comment'
-    | 'reaction'
-    | 'file_upload'
-    | 'creation'
-    | 'subtask_added'
-    | 'subtask_completed'
+  type: ActivityType
   userId: string
   timestamp: string
   data: {
@@ -95,17 +172,8 @@ export interface Activity {
   }
 }
 
-export interface Member {
-  id: string
-  name: string
-  avatar?: string
-}
-
-export interface Group {
-  id: string
-  name: string
-  members: Array<Member>
-  count: number
-}
+// ==============================
+// Filter Types
+// ==============================
 
 export type Filter = 'today' | 'upcoming'

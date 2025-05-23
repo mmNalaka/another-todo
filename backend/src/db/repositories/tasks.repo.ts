@@ -4,7 +4,7 @@ import type { NewTask } from '@/db/schemas/tasks.schema'
 
 import db from '@/db'
 import { tasksTable } from '@/db/schemas/tasks.schema'
-import { generateListId } from '@/utils/id'
+import { generateTaskId } from '@/utils/id'
 
 export async function getAllUserTasks(
   userId: string,
@@ -35,7 +35,7 @@ export async function createTask(data: NewTask) {
     .values({
       ...data,
       listId: data.listId || null,
-      ...(!data.id && { id: generateListId() }),
+      ...(!data.id && { id: generateTaskId() }),
     })
     .returning()
 }
