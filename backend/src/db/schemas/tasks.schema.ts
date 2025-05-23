@@ -12,13 +12,12 @@ import {
 } from 'drizzle-orm/pg-core'
 
 import { usersTable } from '@/db/schemas/users.schema'
-import { generateListId, generateTaskId } from '@/utils/id'
 
 // Tasks lists table
 export const tasksListsTable = pgTable(
   'tasks_lists',
   {
-    id: text('id').primaryKey().default(generateListId()),
+    id: text('id').primaryKey(),
     title: text('title').notNull(),
     description: text('description'),
     isFrozen: boolean('is_frozen').default(false),
@@ -42,7 +41,7 @@ export const tasksListsTable = pgTable(
 export const tasksTable = pgTable(
   'tasks',
   {
-    id: text('id').primaryKey().default(generateTaskId()),
+    id: text('id').primaryKey(),
     userId: text('user_id')
       .notNull()
       .references(() => usersTable.id, { onDelete: 'cascade' }),

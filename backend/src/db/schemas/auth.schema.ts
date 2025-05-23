@@ -1,10 +1,9 @@
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
-import { nanoid } from 'nanoid'
 
 import { usersTable } from './users.schema'
 
 export const refreshTokensTable = pgTable('refresh_tokens', {
-  id: text('id').primaryKey().default(nanoid()),
+  id: text('id').primaryKey(),
   userId: text('user_id')
     .notNull()
     .references(() => usersTable.id, { onDelete: 'cascade' }),

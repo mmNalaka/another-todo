@@ -9,6 +9,7 @@ import {
   tasksTable,
 } from '@/db/schemas/tasks.schema'
 import { usersTable } from '@/db/schemas/users.schema'
+import { generateListId } from '@/utils/id'
 
 export async function getAllPersonalLists(
   userId: string,
@@ -25,7 +26,13 @@ export async function getAllPersonalLists(
 }
 
 export async function createPersonalList(data: NewTaskList) {
-  return await db.insert(tasksListsTable).values(data).returning()
+  return await db
+    .insert(tasksListsTable)
+    .values({
+      ...data,
+      ...(!data.id && { id: generateListId() }),
+    })
+    .returning()
 }
 
 // Get the list by id, if the the user has permission to access it

@@ -1,4 +1,5 @@
 import { and, eq } from 'drizzle-orm'
+import { nanoid } from 'nanoid'
 
 import db from '@/db'
 import { refreshTokensTable } from '@/db/schemas/auth.schema'
@@ -12,6 +13,7 @@ export async function storeRefreshToken(
   expiresAt: Date,
 ) {
   return await db.insert(refreshTokensTable).values({
+    id: nanoid(),
     userId,
     token,
     expiresAt,

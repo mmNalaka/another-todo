@@ -4,6 +4,7 @@ import type { NewUser } from '@/db/schemas/users.schema'
 
 import db from '@/db'
 import { usersTable } from '@/db/schemas/users.schema'
+import { generateUserId } from '@/utils/id'
 
 const userReturnSchema = {
   id: usersTable.id,
@@ -33,7 +34,10 @@ export async function getUserById(id: string) {
 export async function createNewUser(data: NewUser) {
   return await db
     .insert(usersTable)
-    .values(data)
+    .values({
+      ...data,
+      ...(!data.id && { id: generateUserId() }),
+    })
     .returning(userReturnSchema)
     .then((res) => res[0])
 }
