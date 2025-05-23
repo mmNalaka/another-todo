@@ -1,9 +1,9 @@
-import { sql } from 'drizzle-orm'
 import {
   boolean,
   foreignKey,
   index,
   integer,
+  jsonb,
   numeric,
   pgTable,
   primaryKey,
@@ -20,8 +20,11 @@ export const tasksListsTable = pgTable(
   {
     id: text('id').primaryKey().default(generateListId()),
     title: text('title').notNull(),
+    description: text('description'),
     isFrozen: boolean('is_frozen').default(false),
     isShared: boolean('is_shared').default(false),
+    color: text('color'),
+    schema: jsonb('schema'),
     ownerId: text('owner_id')
       .notNull()
       .references(() => usersTable.id, {

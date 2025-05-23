@@ -8,6 +8,13 @@
       "when": 1747992851989,
       "tag": "0000_init-db-schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1747996954276,
+      "tag": "0001_update-list-with-color-description-and-schema",
+      "breakpoints": true
     }
   ]
 }
