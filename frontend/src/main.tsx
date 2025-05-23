@@ -5,6 +5,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import * as TanstackQuery from '@/integrations/tanstack-query/root-provider.tsx'
 import { AuthProvider, useAuth } from '@/providers/auth-provider'
 import { LocalizationProvider } from '@/providers/localization-provider'
+import { ThemeProvider } from '@/providers/theme-provider'
 import { routeTree } from '@/routeTree.gen'
 import reportWebVitals from '@/reportWebVitals.ts'
 
@@ -21,6 +22,11 @@ const router = createRouter({
   scrollRestoration: true,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
+  defaultPendingComponent: () => (
+    <div className="flex h-full items-center justify-center bg-primary">
+      <div className="spinner" />
+    </div>
+  ),
 })
 
 // Register the router instance for type safety
@@ -37,11 +43,13 @@ function InnerApp() {
 
 function App() {
   return (
-    <LocalizationProvider>
-      <AuthProvider>
-        <InnerApp />
-      </AuthProvider>
-    </LocalizationProvider>
+    <ThemeProvider defaultTheme="light">
+      <LocalizationProvider>
+        <AuthProvider>
+          <InnerApp />
+        </AuthProvider>
+      </LocalizationProvider>
+    </ThemeProvider>
   )
 }
 

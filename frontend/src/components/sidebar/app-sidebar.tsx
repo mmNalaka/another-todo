@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Calendar, CheckSquare, ClipboardCheck, Home } from 'lucide-react'
 
+import { ThemeSwitcher } from '@/components/theme-switcher'
 import { NavMain } from '@/components/sidebar/nav-main'
 import { NavTaskLists } from '@/components/sidebar/nav-lists'
 import { NavUser } from '@/components/sidebar/nav-user'
@@ -49,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
                 <div className="bg-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <ClipboardCheck className="size-4" />
+                  <ClipboardCheck className="size-4 dark:text-zinc-900" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
@@ -69,6 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavTaskLists />
       </SidebarContent>
       <SidebarFooter>
+        <ThemeSwitcher />
         <NavUser />
       </SidebarFooter>
     </Sidebar>
