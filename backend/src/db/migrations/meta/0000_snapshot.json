@@ -1,5 +1,5 @@
 {
-  "id": "14779b84-44a6-4ae8-9b52-d9a336f0a453",
+  "id": "29ad039e-4fda-43a2-9d98-55724a8c13ae",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,14 +10,14 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "'4OT6x5rILvqBSALpjYB-k'"
         },
         "user_id": {
           "name": "user_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -73,13 +73,13 @@
       "columns": {
         "list_id": {
           "name": "list_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "user_id": {
           "name": "user_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -122,10 +122,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "list_collaborators_user_id_tasks_lists_id_fk": {
-          "name": "list_collaborators_user_id_tasks_lists_id_fk",
+        "list_collaborators_user_id_users_id_fk": {
+          "name": "list_collaborators_user_id_users_id_fk",
           "tableFrom": "list_collaborators",
-          "tableTo": "tasks_lists",
+          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
@@ -153,10 +153,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "'lst_y8DAm4A6IApxGF2846h1B'"
         },
         "title": {
           "name": "title",
@@ -180,7 +180,7 @@
         },
         "owner_id": {
           "name": "owner_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -240,26 +240,26 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "'tsk_R0UqZr8911D_pGJWg-lLD'"
         },
         "user_id": {
           "name": "user_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "list_id": {
           "name": "list_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
         "parent_task_id": {
           "name": "parent_task_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -434,10 +434,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "'usr_nDRVqZTzNwDyDf9Ok25uM'"
         },
         "name": {
           "name": "name",

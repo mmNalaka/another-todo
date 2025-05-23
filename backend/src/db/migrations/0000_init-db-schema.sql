@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS "refresh_tokens" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid NOT NULL,
+	"id" text PRIMARY KEY DEFAULT '4OT6x5rILvqBSALpjYB-k' NOT NULL,
+	"user_id" text NOT NULL,
 	"token" text NOT NULL,
 	"expires_at" timestamp with time zone NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -8,27 +8,27 @@ CREATE TABLE IF NOT EXISTS "refresh_tokens" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "list_collaborators" (
-	"list_id" uuid NOT NULL,
-	"user_id" uuid NOT NULL,
+	"list_id" text NOT NULL,
+	"user_id" text NOT NULL,
 	"role" text DEFAULT 'editor',
 	CONSTRAINT "list_collaborators_list_id_user_id_pk" PRIMARY KEY("list_id","user_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "tasks_lists" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY DEFAULT 'lst_y8DAm4A6IApxGF2846h1B' NOT NULL,
 	"title" text NOT NULL,
 	"is_frozen" boolean DEFAULT false,
 	"is_shared" boolean DEFAULT false,
-	"owner_id" uuid NOT NULL,
+	"owner_id" text NOT NULL,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "tasks" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid NOT NULL,
-	"list_id" uuid,
-	"parent_task_id" uuid,
+	"id" text PRIMARY KEY DEFAULT 'tsk_R0UqZr8911D_pGJWg-lLD' NOT NULL,
+	"user_id" text NOT NULL,
+	"list_id" text,
+	"parent_task_id" text,
 	"title" text NOT NULL,
 	"description" text,
 	"value" numeric,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS "tasks" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY DEFAULT 'usr_nDRVqZTzNwDyDf9Ok25uM' NOT NULL,
 	"name" varchar(255) NOT NULL,
 	"email" varchar(255) NOT NULL,
 	"avatar" text,
@@ -62,7 +62,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "list_collaborators" ADD CONSTRAINT "list_collaborators_user_id_tasks_lists_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."tasks_lists"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "list_collaborators" ADD CONSTRAINT "list_collaborators_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

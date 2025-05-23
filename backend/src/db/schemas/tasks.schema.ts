@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm'
 import {
   boolean,
   foreignKey,
@@ -9,21 +10,23 @@ import {
   text,
   timestamp,
 } from 'drizzle-orm/pg-core'
-import { uuid } from 'drizzle-orm/pg-core/columns/uuid'
 
-import { usersTable } from './users.schema'
+import { usersTable } from '@/db/schemas/users.schema'
+import { generateListId, generateTaskId } from '@/utils/id'
 
-// tasks_lists table
+// Tasks lists table
 export const tasksListsTable = pgTable(
   'tasks_lists',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
+    id: text('id').primaryKey().default(generateListId()),
     title: text('title').notNull(),
     isFrozen: boolean('is_frozen').default(false),
     isShared: boolean('is_shared').default(false),
-    ownerId: uuid('owner_id')
+    ownerId: text('owner_id')
       .notNull()
-      .references(() => usersTable.id, { onDelete: 'cascade' }),
+      .references(() => usersTable.id, {
+        onDelete: 'cascade',
+      }),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
   },
@@ -32,18 +35,18 @@ export const tasksListsTable = pgTable(
   }),
 )
 
-// tasks table
+// Tasks table
 export const tasksTable = pgTable(
   'tasks',
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id')
+    id: text('id').primaryKey().default(generateTaskId()),
+    userId: text('user_id')
       .notNull()
       .references(() => usersTable.id, { onDelete: 'cascade' }),
-    listId: uuid('list_id').references(() => tasksListsTable.id, {
+    listId: text('list_id').references(() => tasksListsTable.id, {
       onDelete: 'set null',
     }),
-    parentTaskId: uuid('parent_task_id'),
+    parentTaskId: text('parent_task_id'),
     title: text('title').notNull(),
     description: text('description'),
     value: numeric('value'),
@@ -72,18 +75,17 @@ export const tasksTable = pgTable(
       .onUpdate('cascade'),
   }),
 )
-// Tasks relations
 
-// list_collaborators table
+// List collaborators table
 export const listCollaborators = pgTable(
   'list_collaborators',
   {
-    listId: uuid('list_id')
+    listId: text('list_id')
       .notNull()
       .references(() => tasksListsTable.id, { onDelete: 'cascade' }),
-    userId: uuid('user_id')
+    userId: text('user_id')
       .notNull()
-      .references(() => tasksListsTable.id, { onDelete: 'cascade' }),
+      .references(() => usersTable.id, { onDelete: 'cascade' }),
     role: text('role').default('editor'),
   },
   (table) => ({
@@ -92,14 +94,12 @@ export const listCollaborators = pgTable(
   }),
 )
 
-// Tasks type definitions
+// Type definitions
+export type TasksList = typeof tasksListsTable.$inferSelect
+export type NewTaskList = typeof tasksListsTable.$inferInsert
+
 export type Task = typeof tasksTable.$inferSelect
 export type NewTask = typeof tasksTable.$inferInsert
 
-// Tasks lists type definitions
-export type TaskList = typeof tasksListsTable.$inferSelect
-export type NewTaskList = typeof tasksListsTable.$inferInsert
-
-// List collaborators type definitions
 export type ListCollaborator = typeof listCollaborators.$inferSelect
 export type NewListCollaborator = typeof listCollaborators.$inferInsert

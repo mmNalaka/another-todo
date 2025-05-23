@@ -5,8 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1747306398347,
-      "tag": "0000_init_auth_and_task_db_tables",
+      "when": 1747992851989,
+      "tag": "0000_init-db-schema",
       "breakpoints": true
     }
   ]

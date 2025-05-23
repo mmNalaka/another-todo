@@ -1,14 +1,11 @@
-import { sql } from 'drizzle-orm'
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
-import { uuid } from 'drizzle-orm/pg-core/columns/uuid'
+import { nanoid } from 'nanoid'
 
 import { usersTable } from './users.schema'
 
 export const refreshTokensTable = pgTable('refresh_tokens', {
-  id: uuid('id')
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
-  userId: uuid('user_id')
+  id: text('id').primaryKey().default(nanoid()),
+  userId: text('user_id')
     .notNull()
     .references(() => usersTable.id, { onDelete: 'cascade' }),
   token: text('token').notNull(),
