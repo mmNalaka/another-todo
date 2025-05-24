@@ -14,7 +14,9 @@ const port = env.PORT
 async function startServer() {
   try {
     // Run migrations before starting the server
-    await runMigrations()
+    if (env.NODE_ENV === 'production') {
+      await runMigrations()
+    }
     
     // Start the server
     serve({
