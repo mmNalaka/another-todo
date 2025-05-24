@@ -9,6 +9,8 @@ import { ThemeProvider } from '@/providers/theme-provider'
 import { routeTree } from '@/routeTree.gen'
 import reportWebVitals from '@/reportWebVitals.ts'
 
+import { Toaster } from '@/components/ui/sonner'
+
 import './styles.css'
 
 // Create a new router instance
@@ -47,6 +49,7 @@ function App() {
       <LocalizationProvider>
         <AuthProvider>
           <InnerApp />
+          <Toaster />
         </AuthProvider>
       </LocalizationProvider>
     </ThemeProvider>
