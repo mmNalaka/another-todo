@@ -71,5 +71,11 @@
   "tasks.empty.message": "No tasks yet",
   "tasks.empty.create": "Create your first task",
   "tasks.loading": "Loading tasks...",
-  "tasks.error": "Error loading tasks"
+  "tasks.error": "Error loading tasks",
+  "tasks.taskCreated": "Created:",
+  "tasks.priority.none": "None",
+
+  "tasks.sub.title": "Subtasks",
+  "tasks.sub.create.button": "Create new subtask",
+  "tasks.sub.empty.message": "No subtasks yet"
 }
