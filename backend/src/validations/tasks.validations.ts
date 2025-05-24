@@ -25,5 +25,5 @@ export const updateTaskBodySchema = z.object({
 })
 
 export const taskIdParamSchema = z.object({
-  id: z.string().uuid('Invalid task ID format'),
+  id: z.string(),
 })

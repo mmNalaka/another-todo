@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm'
+import { and, eq, isNull } from 'drizzle-orm'
 
 import type { NewTask } from '@/db/schemas/tasks.schema'
 
@@ -14,7 +14,13 @@ export async function getAllUserTasks(
   return await db
     .select()
     .from(tasksTable)
-    .where(eq(tasksTable.userId, userId))
+    .where(
+      and(
+        eq(tasksTable.userId, userId),
+        isNull(tasksTable.parentTaskId),
+        isNull(tasksTable.listId),
+      ),
+    )
     .limit(limit || 20)
     .offset(offset || 0)
     .orderBy(tasksTable.createdAt)
@@ -26,7 +32,15 @@ export async function getTaskById(taskId: string, userId: string) {
     .from(tasksTable)
     .where(and(eq(tasksTable.id, taskId), eq(tasksTable.userId, userId)))
 
-  return task
+  const subtasks = await db
+    .select()
+    .from(tasksTable)
+    .where(eq(tasksTable.parentTaskId, taskId))
+
+  return {
+    ...task,
+    subtasks,
+  }
 }
 
 export async function createTask(data: Omit<NewTask, 'id'>) {
