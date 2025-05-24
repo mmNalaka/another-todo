@@ -14,14 +14,19 @@ export const env = createEnv({
 
   client: {
     VITE_APP_TITLE: z.string().min(1).optional(),
-    VITE_API_URL: z.string().url().default('http://localhost:4000'),
+    VITE_API_URL: z.string().default(''),
   },
 
   /**
    * What object holds the environment variables at runtime. This is usually
    * `process.env` or `import.meta.env`.
+   * We also check for window.ENV for runtime configuration.
    */
-  runtimeEnv: import.meta.env,
+  runtimeEnv: {
+    ...import.meta.env,
+    // Load from window.ENV if available (for runtime configuration)
+    ...(typeof window !== 'undefined' && window.ENV ? window.ENV : {})
+  },
 
   /**
    * By default, this library will feed the environment variables directly to

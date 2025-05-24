@@ -38,7 +38,8 @@ export type UserResponse = {
   }
 }
 
-const API_URL = env.VITE_API_URL
+// Get API URL from environment or use empty string for relative URLs
+const API_URL = env.VITE_API_URL || ''
 
 export const authApi = {
   async signIn(credentials: SignInCredentials): Promise<AuthResponse> {

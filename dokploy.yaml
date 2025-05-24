@@ -1,0 +1,50 @@
+version: "1"
+
+app:
+  name: ubiquiti-todo
+  region: us-east-1  # Choose the region closest to your users
+
+services:
+  - name: frontend
+    port: 80
+    public: true
+    source:
+      context: .
+      dockerfile: frontend/Dockerfile
+    env:
+      - name: NODE_ENV
+        value: production
+      - name: VITE_API_URL
+        value: ""
+    resources:
+      cpu: 0.5
+      memory: 1Gi
+
+  - name: backend
+    port: 4000
+    public: false  # Only accessible internally
+    source:
+      context: .
+      dockerfile: backend/Dockerfile
+    env:
+      - name: NODE_ENV
+        value: production
+      - name: PORT
+        value: "4000"
+      - name: DATABASE_URL
+        fromSecret: DATABASE_URL
+      - name: JWT_SECRET
+        fromSecret: JWT_SECRET
+      - name: ACCESS_TOKEN_EXPIRY_MINUTES
+        value: "15"
+      - name: REFRESH_TOKEN_EXPIRY_DAYS
+        value: "30"
+    resources:
+      cpu: 1
+      memory: 2Gi
+
+databases:
+  - type: postgres
+    name: ubiquiti-todo-db
+    version: "17.2"
+    size: small
