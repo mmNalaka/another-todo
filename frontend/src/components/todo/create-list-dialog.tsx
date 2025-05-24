@@ -1,8 +1,7 @@
-'use client'
-
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Check, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react'
 
+import type { FieldType, SchemaField } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -14,38 +13,129 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useApiMutation } from '@/hooks/use-api-query'
-import { queryClient } from '@/integrations/tanstack-query/root-provider'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { cn } from '@/lib/utils'
 import { useLocalization } from '@/hooks/use-localization'
+import { useCreateList } from '@/hooks/lists/use-create-list'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible'
 
 type CreateListDialogProps = React.ComponentProps<typeof Dialog>
+
+const predefinedColors = [
+  // Blues
+  { name: 'Blue', value: '#3b82f6' },
+  { name: 'Sky', value: '#0ea5e9' },
+  { name: 'Cyan', value: '#06b6d4' },
+  { name: 'Indigo', value: '#4f46e5' },
+  { name: 'Light Blue', value: '#7dd3fc' },
+  // Reds
+  { name: 'Red', value: '#ef4444' },
+  { name: 'Rose', value: '#e11d48' },
+  { name: 'Pink', value: '#ec4899' },
+  { name: 'Fuchsia', value: '#d946ef' },
+  { name: 'Light Red', value: '#fca5a5' },
+  // Greens
+  { name: 'Green', value: '#22c55e' },
+  { name: 'Emerald', value: '#10b981' },
+  { name: 'Teal', value: '#14b8a6' },
+  { name: 'Lime', value: '#84cc16' },
+  { name: 'Light Green', value: '#86efac' },
+  // Yellows/Oranges
+  { name: 'Yellow', value: '#eab308' },
+  { name: 'Amber', value: '#f59e0b' },
+  { name: 'Orange', value: '#f97316' },
+  { name: 'Light Yellow', value: '#fef08a' },
+  // Purples
+  { name: 'Purple', value: '#a855f7' },
+  { name: 'Violet', value: '#8b5cf6' },
+  { name: 'Light Purple', value: '#d8b4fe' },
+  // Neutrals
+  { name: 'Slate', value: '#64748b' },
+  { name: 'Gray', value: '#6b7280' },
+  { name: 'Stone', value: '#78716c' },
+  { name: 'Black', value: '#171717' },
+  // Pastels
+  { name: 'Pastel Blue', value: '#bfdbfe' },
+  { name: 'Pastel Green', value: '#bbf7d0' },
+  { name: 'Pastel Pink', value: '#fbcfe8' },
+  { name: 'Pastel Purple', value: '#e9d5ff' },
+]
+
+const fieldTypes: Array<{ label: string; value: FieldType }> = [
+  { label: 'Text', value: 'text' },
+  { label: 'Number', value: 'number' },
+  { label: 'Date', value: 'date' },
+  { label: 'Checkbox', value: 'checkbox' },
+]
 
 export function CreateListDialog(props: CreateListDialogProps) {
   const { t } = useLocalization()
   const [isListDialogOpen, setIsListDialogOpen] = useState(false)
-  const [newListName, setNewListName] = useState('')
+  const [listName, setListName] = useState('')
+  const [selectedColor, setSelectedColor] = useState('#4f46e5')
+  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [fields, setFields] = useState<Array<SchemaField>>([
+    { id: '1', name: 'Task', type: 'text', required: true },
+  ])
 
-  const createListMutation = useApiMutation<any, any>('/lists', {
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lists'] })
-      setNewListName('')
-      setIsListDialogOpen(false)
-    },
-  })
+  const { createList, isCreating } = useCreateList()
+
+  const addField = () => {
+    const newField: SchemaField = {
+      id: Date.now().toString(),
+      name: '',
+      type: 'text',
+      required: false,
+    }
+    setFields([...fields, newField])
+  }
+
+  const updateField = (id: string, updates: Partial<SchemaField>) => {
+    setFields(
+      fields.map((field) =>
+        field.id === id ? { ...field, ...updates } : field,
+      ),
+    )
+  }
+
+  const removeField = (id: string) => {
+    setFields(fields.filter((field) => field.id !== id))
+  }
 
   const handleAddList = async () => {
-    if (!newListName.trim()) return
+    if (!listName.trim()) return
 
     try {
-      await createListMutation.mutate({ title: newListName.trim() })
-      setNewListName('')
+      await createList({
+        title: listName,
+        color: selectedColor,
+        schema: fields,
+      })
+
+      // Reset form state
+      setListName('')
+      setSelectedColor('#4f46e5')
+      setShowAdvanced(false)
+      setFields([{ id: '1', name: 'Task', type: 'text', required: true }])
+      setIsListDialogOpen(false)
     } catch (error) {
       console.error('Failed to create list:', error)
     }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !showAdvanced) {
       handleAddList()
     }
   }
@@ -64,27 +154,214 @@ export function CreateListDialog(props: CreateListDialogProps) {
           </div>
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{t('lists.create.list.label')}</DialogTitle>
           <DialogDescription>{t('lists.create.description')}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="list-name">{t('lists.create.list.label')}</Label>
-            <Input
-              id="list-name"
-              placeholder={t('list.create.form.title.placeholder')}
-              value={newListName}
-              onChange={(e) => setNewListName(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoFocus
-            />
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="list-name" className="text-base font-medium">
+                {t('lists.create.list.label')}
+              </Label>
+              <Input
+                id="list-name"
+                value={listName}
+                onChange={(e) => setListName(e.target.value)}
+                placeholder={t('list.create.form.title.placeholder')}
+                className="mt-1"
+                onKeyDown={handleKeyDown}
+                autoFocus
+                required
+              />
+            </div>
+
+            <div>
+              <Label className="text-base font-medium mb-2 block">
+                {t('list.create.form.color')}
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {predefinedColors.map((color) => (
+                  <button
+                    key={color.value}
+                    type="button"
+                    className={cn(
+                      'w-6 h-6 rounded-md border-2 transition-all flex items-center justify-center',
+                      selectedColor === color.value
+                        ? 'border-gray-900'
+                        : 'border-transparent hover:border-gray-300',
+                    )}
+                    style={{ backgroundColor: color.value }}
+                    onClick={() => setSelectedColor(color.value)}
+                    aria-label={`Select ${color.name} color`}
+                    title={color.name}
+                  >
+                    {selectedColor === color.value && (
+                      <Check className="h-4 w-4 text-white drop-shadow-md" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <Collapsible
+                open={showAdvanced}
+                onOpenChange={setShowAdvanced}
+                className="w-full"
+              >
+                <div className="flex items-center">
+                  <CollapsibleTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900"
+                    >
+                      {showAdvanced ? (
+                        <ChevronUp className="mr-1 h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="mr-1 h-4 w-4" />
+                      )}
+                      {t('list.create.form.advanced')}
+                    </button>
+                  </CollapsibleTrigger>
+                </div>
+
+                <CollapsibleContent className="mt-4 space-y-4 border-t pt-4">
+                  <div>
+                    <h3 className="text-base font-medium mb-2">
+                      {t('list.create.form.schema')}
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-4">
+                      {t('list.create.form.schema.description')}
+                    </p>
+
+                    <div className="space-y-4">
+                      {fields.map((field) => (
+                        <div
+                          key={field.id}
+                          className="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto_auto] gap-4 items-start"
+                        >
+                          <div className="flex flex-col h-full">
+                            <Label
+                              htmlFor={`field-name-${field.id}`}
+                              className="text-sm mb-2"
+                            >
+                              {t('list.create.form.field.name')}
+                            </Label>
+                            <Input
+                              id={`field-name-${field.id}`}
+                              value={field.name}
+                              onChange={(e) =>
+                                updateField(field.id, { name: e.target.value })
+                              }
+                              placeholder={t(
+                                'list.create.form.field.placeholder',
+                              )}
+                            />
+                          </div>
+
+                          <div className="flex flex-col h-full">
+                            <Label
+                              htmlFor={`field-type-${field.id}`}
+                              className="text-sm mb-2"
+                            >
+                              {t('list.create.form.field.type')}
+                            </Label>
+                            <Select
+                              value={field.type}
+                              onValueChange={(value) =>
+                                updateField(field.id, {
+                                  type: value as FieldType,
+                                })
+                              }
+                            >
+                              <SelectTrigger
+                                id={`field-type-${field.id}`}
+                                className="h-10"
+                              >
+                                <SelectValue
+                                  placeholder={t(
+                                    'list.create.form.field.type.placeholder',
+                                  )}
+                                />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {fieldTypes.map((type) => (
+                                  <SelectItem
+                                    key={type.value}
+                                    value={type.value}
+                                  >
+                                    {t(
+                                      `list.create.form.field.type.${type.value}`,
+                                    )}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="flex flex-col h-full pt-0">
+                            <Label
+                              htmlFor={`required-${field.id}`}
+                              className="text-sm mb-2"
+                            >
+                              {t('list.create.form.field.required')}
+                            </Label>
+                            <div className="flex items-center h-10">
+                              <Switch
+                                id={`required-${field.id}`}
+                                checked={field.required}
+                                onCheckedChange={(checked) =>
+                                  updateField(field.id, { required: checked })
+                                }
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col h-full pt-0">
+                            <div className="text-sm mb-2 opacity-0">
+                              {/* Invisible label for alignment */}
+                              Action
+                            </div>
+                            <div className="flex items-center h-10">
+                              <Button
+                                type="button"
+                                variant="destructiveGhost"
+                                size="icon"
+                                onClick={() => removeField(field.id)}
+                                disabled={fields.length === 1}
+                                className="h-9 w-9"
+                                aria-label={t('list.create.form.field.remove')}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addField}
+                      className="mt-4"
+                    >
+                      <Plus className="mr-1 h-4 w-4" />
+                      {t('list.create.form.field.add')}
+                    </Button>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
           </div>
+
           <Button
             onClick={handleAddList}
             className="w-full"
-            disabled={!newListName.trim()}
+            disabled={!listName.trim() || isCreating}
           >
             {t('list.create.form.submit')}
           </Button>
