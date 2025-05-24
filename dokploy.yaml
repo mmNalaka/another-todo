@@ -6,7 +6,7 @@ app:
 
 services:
   - name: frontend
-    port: 80
+    port: 8080
     public: true
     source:
       context: .

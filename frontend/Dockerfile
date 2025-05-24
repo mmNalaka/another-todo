@@ -41,7 +41,7 @@ COPY frontend/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 # Expose port
-EXPOSE 80
+EXPOSE 8080
 
 # Set the entrypoint script
 ENTRYPOINT ["/docker-entrypoint.sh"]
