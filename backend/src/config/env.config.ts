@@ -24,7 +24,7 @@ const EnvSchema = z.object({
     'debug',
     'trace',
     'silent',
-  ]),
+  ]).default('info'),
   DATABASE_URL: z.string().url(),
   JWT_SECRET: z.string(),
   ACCESS_TOKEN_EXPIRY_MINUTES: z.coerce.number().default(15),
