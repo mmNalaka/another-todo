@@ -49,7 +49,7 @@ function App() {
       <LocalizationProvider>
         <AuthProvider>
           <InnerApp />
-          <Toaster />
+          <Toaster closeButton />
         </AuthProvider>
       </LocalizationProvider>
     </ThemeProvider>

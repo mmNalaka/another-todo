@@ -126,7 +126,8 @@ export interface Task {
   position: number
   createdAt: string
   updatedAt: string
-  subtasks?: Array<Task>
+  subTasks?: Array<Task>
+  parentTask?: Task
 }
 
 export type CreateTaskInput = {
