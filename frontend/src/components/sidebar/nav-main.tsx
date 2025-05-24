@@ -1,5 +1,6 @@
 'use client'
 
+import { Link } from '@tanstack/react-router'
 import type { LucideIcon } from 'lucide-react'
 
 import {
@@ -30,7 +31,7 @@ export function NavMain({
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton asChild tooltip={item.title}>
-              <a href={item.url}>
+              <Link to={item.url}>
                 <item.icon />
                 <span className="flex grow justify-between">
                   <span>{item.title}</span>
@@ -38,7 +39,7 @@ export function NavMain({
                     {item.count && item.count}
                   </span>
                 </span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}

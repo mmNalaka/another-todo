@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { LoginForm } from '@/components/login-form'
 import { useAuth } from '@/providers/auth-provider'
 
-const fallbackRedirect = '/todos'
+const fallbackRedirect = '/tasks'
 
 export const Route = createFileRoute('/login')({
   validateSearch: z.object({

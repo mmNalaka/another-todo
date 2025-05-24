@@ -23,15 +23,15 @@ const data = {
     avatar: '',
   },
   navMain: [
-    { url: '/todos', title: 'Home', icon: Home },
+    { url: '/tasks', title: 'Home', icon: Home },
     {
-      url: '/todos',
+      url: '/tasks',
       title: 'Completed',
       icon: CheckSquare,
       isActive: false,
     },
     {
-      url: '/todos',
+      url: '/tasks',
       title: 'Today',
       icon: Calendar,
       isActive: false,
