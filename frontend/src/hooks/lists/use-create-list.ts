@@ -1,32 +1,65 @@
-import { useApiMutation } from '@/hooks/use-api-query'
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import type { CreateListInput, List } from '@/lib/types'
+import { authenticatedFetch } from '@/lib/api/query-client'
 import { queryClient } from '@/integrations/tanstack-query/root-provider'
 
-type CreateListInput = {
-  title: string
+interface CreateListOptions {
+  onSuccess?: (createdList: List) => void
+  onError?: (error: Error, listData: CreateListInput) => void
+  showToasts?: boolean
+  invalidateQueries?: boolean
+  errorMessage?: string
 }
 
-export function useCreateList() {
-  const createListMutation = useApiMutation<any, CreateListInput>('/lists', {
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lists'] })
+export function useCreateList(options?: CreateListOptions) {
+  const {
+    showToasts = true,
+    invalidateQueries = true,
+    errorMessage = 'Failed to create list',
+  } = options || {}
+
+  const { mutate, mutateAsync, isPending, error, ...rest } = useMutation({
+    mutationFn: (listData: CreateListInput) => {
+      if (!listData.title.trim()) {
+        throw new Error('List title cannot be empty')
+      }
+      return authenticatedFetch<{ data: List }>('/lists', {
+        method: 'POST',
+        body: JSON.stringify(listData),
+      })
+    },
+    onSuccess: (data) => {
+      if (invalidateQueries) {
+        queryClient.invalidateQueries({ queryKey: ['lists'] })
+      }
+
+      if (showToasts) {
+        toast.success('List created successfully')
+      }
+
+      if (options?.onSuccess) {
+        options.onSuccess(data.data)
+      }
+    },
+    onError: (err, variables) => {
+      console.error('List creation error:', err)
+      
+      if (showToasts) {
+        toast.error(errorMessage)
+      }
+
+      if (options?.onError) {
+        options.onError(err, variables)
+      }
     },
   })
 
-  const createList = async (title: string) => {
-    if (!title.trim()) return null
-
-    try {
-      const result = await createListMutation.mutate({ title: title.trim() })
-      return result
-    } catch (error) {
-      console.error('Failed to create list:', error)
-      return null
-    }
-  }
-
   return {
-    createList,
-    isCreating: createListMutation.isPending,
-    error: createListMutation.error,
+    createList: mutate,
+    createListAsync: mutateAsync,
+    isCreating: isPending,
+    error,
+    ...rest,
   }
 }

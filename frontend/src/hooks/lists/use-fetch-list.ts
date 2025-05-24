@@ -1,12 +1,12 @@
-import { queryOptions } from '@tanstack/react-query'
+import { queryOptions, useQuery } from '@tanstack/react-query'
 import type { List } from '@/lib/types'
-import { useApiQuery } from '@/hooks/use-api-query'
 import { authenticatedFetch } from '@/lib/api/query-client'
 
-export const listQueryOptions = (postId: string) =>
+// Use consistent query key format: ['lists', listId]
+export const listQueryOptions = (listId: string) =>
   queryOptions({
-    queryKey: ['posts', { postId }],
-    queryFn: () => authenticatedFetch<{ data: List }>(`/lists/${postId}`),
+    queryKey: ['lists', listId],
+    queryFn: () => authenticatedFetch<{ data: List }>(`/lists/${listId}`),
   })
 
 export function useFetchList(listId?: string) {
@@ -16,11 +16,11 @@ export function useFetchList(listId?: string) {
     data: listData,
     isLoading,
     error,
-  } = useApiQuery<{ data: List }>(
-    ['list', listId as string],
-    `/lists/${listId}`,
-    { enabled },
-  )
+  } = useQuery({
+    queryKey: ['lists', listId!],
+    queryFn: () => authenticatedFetch<{ data: List }>(`/lists/${listId}`),
+    enabled,
+  })
 
   return {
     list: listData?.data || null,
