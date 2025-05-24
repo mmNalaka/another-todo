@@ -32,14 +32,26 @@ export async function getTaskById(taskId: string, userId: string) {
     .from(tasksTable)
     .where(and(eq(tasksTable.id, taskId), eq(tasksTable.userId, userId)))
 
-  const subtasks = await db
+  const subTasks = await db
     .select()
     .from(tasksTable)
     .where(eq(tasksTable.parentTaskId, taskId))
+    .orderBy(tasksTable.createdAt)
+
+  let parentTask = null
+  if (task.parentTaskId) {
+    parentTask = await db
+      .select()
+      .from(tasksTable)
+      .where(eq(tasksTable.id, task.parentTaskId))
+      .limit(1)
+      .then((res) => res[0])
+  }
 
   return {
     ...task,
-    subtasks,
+    subTasks,
+    parentTask,
   }
 }
 
