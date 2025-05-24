@@ -21,6 +21,7 @@ import {
   createListBodySchema,
   getListParamsSchema,
 } from '@/validations/lists.validations'
+import { generateListId } from '@/utils/id'
 
 // GET /api/lists - Get all tasks_lists for a user
 export const getAllListHandler = factory.createHandlers(
@@ -49,6 +50,7 @@ export const createListHandler = factory.createHandlers(
     const list = await createPersonalList({
       ...data,
       ownerId: userInfo.id,
+      id: generateListId(),
     })
 
     if (!list) {

@@ -17,6 +17,7 @@ import {
   signInBodySchema,
   signUpBodySchema,
 } from '@/validations/auth.validations'
+import { generateUserId } from '@/utils/id'
 
 // GET /signup - Signup using email and password
 export const authSignupHandler = factory.createHandlers(
@@ -35,6 +36,7 @@ export const authSignupHandler = factory.createHandlers(
     const newUser = await createNewUser({
       ...data,
       hashedPassword,
+      id: generateUserId(),
     })
 
     // Create access token and refresh token
