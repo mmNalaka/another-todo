@@ -20,10 +20,10 @@ app.use(pinoLogger())
 app.use(cors(corsOptions))
 
 // Routes
-app.route('/', globalRoutes)
-app.route('/auth', authRouter)
-app.route('/tasks', tasksRoutes)
-app.route('/lists', listsRoutes)
+app.route('/api/', globalRoutes)
+app.route('/api/auth', authRouter)
+app.route('/api/tasks', tasksRoutes)
+app.route('/api/lists', listsRoutes)
 
 // Global error handler
 app.use(errorHandler())

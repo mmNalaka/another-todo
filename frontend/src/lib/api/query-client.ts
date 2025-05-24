@@ -8,7 +8,7 @@ export async function authenticatedFetch<T>(
   options: RequestInit = {},
 ): Promise<T> {
   // Get API URL from environment or use empty string for relative URLs
-  const API_URL = env.VITE_API_URL || ''
+  const API_URL = env.VITE_API_URL.endsWith('/api') ? env.VITE_API_URL : `${env.VITE_API_URL}/api`
   // If URL starts with http, use it as is, otherwise prepend API_URL if it exists
   const fullUrl = url.startsWith('http') ? url : `${API_URL}${url}`
 
