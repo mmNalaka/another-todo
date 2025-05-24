@@ -21,8 +21,8 @@ tasksRouter.get('/', ...getAllTasksHandler)
 tasksRouter.get('/:id', ...getTaskByIdHandler)
 // POST / - Create a new task
 tasksRouter.post('/', ...createTaskHandler)
-// PUT /:id - Update a task by id
-tasksRouter.put('/:id', ...updateTaskHandler)
+// PATCH /:id - Update a task by id
+tasksRouter.patch('/:id', ...updateTaskHandler)
 // DELETE /:id - Delete a task by id
 tasksRouter.delete('/:id', ...deleteTaskHandler)
 

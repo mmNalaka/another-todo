@@ -83,7 +83,7 @@ export const createTaskHandler = factory.createHandlers(
   },
 )
 
-// PUT /api/tasks/:id - Update a task by id
+// PATCH /api/tasks/:id - Update a task by id
 export const updateTaskHandler = factory.createHandlers(
   zValidator('param', taskIdParamSchema),
   zValidator('json', updateTaskBodySchema),
@@ -93,15 +93,23 @@ export const updateTaskHandler = factory.createHandlers(
     const data = c.req.valid('json')
 
     // Check if task exists
-    const existingTask = await getTaskById(id, userInfo.id)
+    const { dueDate, ...existingTask } = await getTaskById(id, userInfo.id)
 
     if (!existingTask) {
       return createErrorResponse(c, 'NOT_FOUND', 'Task not found')
     }
 
+    let newDueDate = null
+    if (data.dueDate) {
+      newDueDate = new Date(data.dueDate)
+    } else if (dueDate) {
+      newDueDate = new Date(dueDate)
+    }
+
     const updatedTask = await updateTask(id, userInfo.id, {
+      ...existingTask,
       ...data,
-      dueDate: data.dueDate ? new Date(data.dueDate) : null,
+      dueDate: newDueDate,
     })
 
     if (!updatedTask) {
