@@ -15,7 +15,8 @@
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
     "db:migrate": "tsx src/db/migrate.ts",
-    "start:prod": "npm run db:migrate && npm run start"
+    "db:migrate:prod": "node ./dist/src/db/migrate.js",
+    "start:prod": "npm run db:migrate:prod && npm run start"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
