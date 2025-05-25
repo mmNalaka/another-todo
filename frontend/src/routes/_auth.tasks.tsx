@@ -10,6 +10,7 @@ import { useFetchTasks } from '@/hooks/tasks/use-fetch-tasks'
 import { TaskList } from '@/components/tasks/task-list'
 import { useLocalization } from '@/hooks/use-localization'
 import { useUpdateTask } from '@/hooks/tasks/use-update-task'
+import { useDebouncedSave } from '@/hooks/use-debounced-save'
 
 export const Route = createFileRoute('/_auth/tasks')({
   component: RouteComponent,
@@ -23,6 +24,12 @@ function RouteComponent() {
 
   const { tasks, isLoading } = useFetchTasks()
   const { updateTask } = useUpdateTask()
+  
+  // Use the debounced save hook for task updates
+  const { debouncedSave } = useDebouncedSave<{ id: string } & Partial<Task>>(
+    updateTask,
+    500 // 500ms debounce delay
+  )
 
   // Get the currently viewed task (either from root tasks or navigation stack)
   const currentTask = selectedTaskId
@@ -70,7 +77,7 @@ function RouteComponent() {
   }
 
   const handleToggleCompletion = (task: Task) => {
-    updateTask({ id: task.id, isCompleted: !task.isCompleted })
+    debouncedSave({ id: task.id, isCompleted: !task.isCompleted })
   }
 
   return (
