@@ -78,5 +78,13 @@
 
   "tasks.sub.title": "Subtasks",
   "tasks.sub.create.button": "Create new subtask",
-  "tasks.sub.empty.message": "No subtasks yet"
+  "tasks.sub.empty.message": "No subtasks yet",
+
+  "lists.view": "View List",
+  "lists.delete": "Delete List",
+  "lists.delete.confirm.title": "Are you sure you want to delete this list?",
+  "lists.delete.confirm.description": "This will permanently delete the list \"{{title}}\" and all of its tasks. This action cannot be undone.",
+  "lists.delete.confirm.cancel": "Cancel",
+  "lists.delete.confirm.delete": "Delete",
+  "lists.delete.loading": "Deleting..."
 }
