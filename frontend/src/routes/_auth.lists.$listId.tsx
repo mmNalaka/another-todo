@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { createFileRoute } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
@@ -9,6 +9,10 @@ import { TaskList } from '@/components/tasks/task-list'
 import { TaskCreator } from '@/components/tasks/task-creator'
 import { TaskDetails } from '@/components/tasks/task-details'
 import { useUpdateTask } from '@/hooks/tasks/use-update-task'
+import { useUpdateList } from '@/hooks/lists/use-update-list'
+import { useDebouncedSave } from '@/hooks/use-debounced-save'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 
 export const Route = createFileRoute('/_auth/lists/$listId')({
   loader: ({ context: { queryClient }, params: { listId } }) => {
@@ -29,6 +33,22 @@ function RouteComponent() {
   } = useSuspenseQuery(listQueryOptions(listId))
 
   const { updateTask } = useUpdateTask()
+  const { updateList } = useUpdateList()
+
+  // State for list fields
+  const [title, setTitle] = useState(data.title)
+  const [description, setDescription] = useState(data.description || '')
+  
+  // Use the debounced save hook instead of the inline implementation
+  const { debouncedSave } = useDebouncedSave<{ id: string } & Partial<{ title: string; description: string }>>(
+    updateList,
+    800 // 800ms debounce delay
+  )
+
+  useEffect(() => {
+    setTitle(data.title)
+    setDescription(data.description || '')
+  }, [data])
 
   const tasks = data.tasks ?? []
 
@@ -39,10 +59,26 @@ function RouteComponent() {
       : tasks.find((task) => task.id === selectedTaskId)
     : null
 
-  const handleSelectTask = async (task: Task) => {
-    await setSelectedTaskId(task.id)
+  // Handle title change with auto-save
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value
+    setTitle(newTitle)
+    debouncedSave({ id: listId, title: newTitle })
+  }
+
+  // Handle description change with auto-save
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    const newDescription = e.target.value.trim()
+    setDescription(newDescription)
+    debouncedSave({ id: listId,  description: newDescription })
+  }
+
+  const handleSelectTask = (task: Task) => {
+    setSelectedTaskId(task.id)
     // Reset navigation stack when selecting from root
-    await setNavigationStack([])
+    setNavigationStack([])
   }
 
   const handleNavigateToSubtask = (subtask: Task) => {
@@ -78,11 +114,41 @@ function RouteComponent() {
   }
 
   const handleToggleCompletion = (task: Task) => {
-    updateTask({ id: task.id, isCompleted: !task.isCompleted, listId: task.listId })
+    updateTask({
+      id: task.id,
+      isCompleted: !task.isCompleted,
+      listId: task.listId,
+    })
   }
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col p-4 space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <Input
+              value={title}
+              onChange={handleTitleChange}
+              className="font-semibold text-2xl lg:text-3xl border-none p-0 bg-transparent! px-2"
+            />
+          </div>
+          <span className="text-sm text-gray-500 ml-2">
+            {data.tasks?.length || 0} {t('tasks.title')}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <Textarea
+              value={description}
+              onChange={handleDescriptionChange}
+              placeholder={t('todo.taskDescription') || 'Add a description...'}
+              className="min-h-[40px] text-sm border-none resize-none bg-transparent! placeholder:text-gray-400 placeholder:italic"
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-row h-full">
         <div
           className={`overflow-auto py-2 px-4 md:p4 ${currentTask ? 'flex-1/2' : 'flex-1'}`}
