@@ -129,7 +129,7 @@ export function TaskDetails({
 
   // Handle toggle completion
   const handleToggleCompletion = (task: TaskUpdateData) => {
-    updateTask({ id: task.id, isCompleted: !task.isCompleted })
+    updateTask({ id: task.id, isCompleted: !task.isCompleted, listId: task.listId })
   }
 
   // Handle select task

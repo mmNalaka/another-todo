@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
-import { Calendar as CalendarIcon } from 'lucide-react'
+import { Calendar as CalendarIcon, Plus, X } from 'lucide-react'
 import type { CreateTaskInput, Priority } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -190,19 +190,19 @@ export function TaskCreator({
           <Button
             size="sm"
             variant="default"
-            className="h-7 px-3 text-xs"
+            className="h-7"
             onClick={handleCreateTask}
             disabled={isPending}
           >
-            {isPending ? 'Adding...' : 'Add'}
+            <Plus className="h-4 w-4" />
           </Button>
           <Button
             variant="secondary"
             size="sm"
-            className="h-7 px-3 text-xs"
+            className="h-7"
             onClick={resetForm}
           >
-            Cancel
+            <X className="h-4 w-4" />
           </Button>
         </div>
       </div>

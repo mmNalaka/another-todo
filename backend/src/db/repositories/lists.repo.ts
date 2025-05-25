@@ -60,17 +60,10 @@ export async function getListCollaborators(id: string) {
 // Get list tasks
 export async function getListTasks(id: string) {
   return await db
-    .select({
-      id: tasksTable.id,
-      title: tasksTable.title,
-      completed: tasksTable.isCompleted,
-      listId: tasksTable.listId,
-      createdAt: tasksTable.createdAt,
-      updatedAt: tasksTable.updatedAt,
-      userId: tasksTable.userId,
-      value: tasksTable.value,
-    })
+    .select()
     .from(tasksListsTable)
     .innerJoin(tasksTable, eq(tasksListsTable.id, tasksTable.listId))
     .where(eq(tasksListsTable.id, id))
+    .orderBy(tasksTable.createdAt)
+    .then((res) => res.map((task) => task.tasks))
 }

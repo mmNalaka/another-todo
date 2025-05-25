@@ -20,6 +20,8 @@ export function useCreateTask<TData = Task>(
     showToasts = true,
     invalidateQueries = true,
     errorMessage = 'Failed to create task',
+    onSuccess,
+    onError,
     ...mutationOptions
   } = options || {}
 
@@ -30,15 +32,10 @@ export function useCreateTask<TData = Task>(
         body: JSON.stringify(taskData),
       }),
     onSuccess: (data, variables) => {
-      console.log('Task created successfully:', variables)
       if (invalidateQueries) {
-          // Always invalidate all tasks
           queryClient.invalidateQueries({ queryKey: ['tasks'] })
           
-          // Invalidate the specific list if a listId is provided
           if (variables.listId) {
-            // Invalidate both the lists collection and the specific list
-            queryClient.invalidateQueries({ queryKey: ['lists'] })
             queryClient.invalidateQueries({ queryKey: ['lists', variables.listId] })
           }
           
@@ -52,8 +49,8 @@ export function useCreateTask<TData = Task>(
         toast.success('Task created successfully')
       }
 
-      if (options?.onSuccess) {
-        options.onSuccess(data as unknown as Task)
+      if (onSuccess) {
+        onSuccess(data as unknown as Task)
       }
     },
     onError: (err, variables) => {
@@ -63,8 +60,8 @@ export function useCreateTask<TData = Task>(
         toast.error(errorMessage)
       }
 
-      if (options?.onError) {
-        options.onError(err, variables)
+      if (onError) {
+        onError(err, variables)
       }
     },
     ...mutationOptions,

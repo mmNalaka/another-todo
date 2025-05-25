@@ -26,7 +26,6 @@ function RouteComponent() {
 
   const {
     data: { data },
-    refetch,
   } = useSuspenseQuery(listQueryOptions(listId))
 
   const { updateTask } = useUpdateTask()
@@ -79,7 +78,7 @@ function RouteComponent() {
   }
 
   const handleToggleCompletion = (task: Task) => {
-    updateTask({ id: task.id, isCompleted: !task.isCompleted })
+    updateTask({ id: task.id, isCompleted: !task.isCompleted, listId: task.listId })
   }
 
   return (
@@ -94,9 +93,6 @@ function RouteComponent() {
                 buttonLabel={t('tasks.create.button')}
                 parentId={undefined}
                 listId={listId}
-                onTaskCreated={() => {
-                  refetch()
-                }}
               />
             </div>
 

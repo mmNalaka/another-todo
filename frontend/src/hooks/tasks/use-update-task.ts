@@ -24,6 +24,8 @@ export function useUpdateTask<TData = Task>(
     showToasts = true,
     invalidateQueries = true,
     errorMessage = 'Failed to update task',
+    onSuccess,
+    onError,
     ...mutationOptions
   } = options || {}
 
@@ -35,16 +37,23 @@ export function useUpdateTask<TData = Task>(
       }),
     onSuccess: (data, variables) => {
       if (invalidateQueries) {
-        queryClient.invalidateQueries({ queryKey: ['tasks'] })
         queryClient.invalidateQueries({ queryKey: ['task', variables.id] })
+
+        if (!variables.listId) {
+          queryClient.invalidateQueries({ queryKey: ['tasks'] })
+        }
+
+        if (variables.listId) {
+          queryClient.invalidateQueries({ queryKey: ['lists', variables.listId] })
+        }
       }
 
       if (showToasts) {
         toast.success('Task updated successfully')
       }
 
-      if (options?.onSuccess) {
-        options.onSuccess(data as unknown as Task)
+      if (onSuccess) {
+        onSuccess(data as unknown as Task)
       }
     },
     onError: (err, variables) => {
@@ -54,8 +63,8 @@ export function useUpdateTask<TData = Task>(
         toast.error(errorMessage)
       }
 
-      if (options?.onError) {
-        options.onError(err, variables as Partial<Task>)
+      if (onError) {
+        onError(err, variables as Partial<Task>)
       }
     },
     ...mutationOptions,
