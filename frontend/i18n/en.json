@@ -14,6 +14,7 @@
   "generic.register": "Register",
   "generic.createNew": "Create New",
 
+  "tasks.title": "Tasks",
   "todo.title": "Todo List",
   "todo.add": "Add Task",
   "todo.edit": "Edit Task",
