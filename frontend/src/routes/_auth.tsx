@@ -32,21 +32,21 @@ function AuthenticatedLayout() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex shrink-0 items-center gap-2">
+        <header className="flex shrink-0 items-center gap-2 sticky top-0 left-0 right-0 bg-background">
           <div className="flex items-center justify-between p-2 border-b w-full">
             <SidebarTrigger className="m-2" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <div>
-              <h2 className="text-xl font-semibold">
+              <h2 className="text-lg font-semibold">
                 {t('tasks.app.greeting')}, {user && user.name} 👋
               </h2>
-              <p className="text-gray-500 text-sm">{getCurrentDate()}</p>
+              <p className="text-gray-500 text-xs">{getCurrentDate()}</p>
             </div>
           </div>
         </header>
-        <main className="flex flex-1 flex-col gap-4 pt-0">
+        <div className="flex flex-1 flex-col gap-4 pt-0 h-screen">
           <Outlet />
-        </main>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )

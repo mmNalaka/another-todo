@@ -81,10 +81,10 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden">
-      <div className="flex flex-row h-full">
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex flex-row flex-1 overflow-hidden">
         <div
-          className={`overflow-auto py-2 px-4 md:p4 ${currentTask ? 'flex-1/2' : 'flex-1'}`}
+          className={`overflow-y-auto py-2 px-4 md:p-4 ${currentTask ? 'w-1/2' : 'w-full'}`}
         >
           <div className="space-y-2">
             <div className="py-2">
