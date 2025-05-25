@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Calendar, Check, ChevronLeft, Edit, Flag, Save, X } from 'lucide-react'
+import { Calendar, Check, ChevronLeft, Edit, Flag, Loader2, Save, X } from 'lucide-react'
 import { format } from 'date-fns'
 import type { Priority, Task } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -49,13 +49,12 @@ export function TaskDetails({
 }: TaskDetailProps) {
   const { t } = useLocalization()
   const isMobile = useIsMobile()
-  const { updateTask } = useUpdateTask()
+  const { updateTask, isPending: isSaving } = useUpdateTask()
 
   // State for task fields
   const [title, setTitle] = useState(task.title)
   const [description, setDescription] = useState(task.description || '')
   const [isEditingDescription, setIsEditingDescription] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
 
   const { fullTask, isLoading, error, refetch } = useFetchTask(task.id)
 
@@ -73,8 +72,6 @@ export function TaskDetails({
       let timeoutId: ReturnType<typeof setTimeout> | null = null
 
       return (data: TaskUpdateData) => {
-        setIsSaving(true)
-
         if (timeoutId) {
           clearTimeout(timeoutId)
         }
@@ -161,7 +158,7 @@ export function TaskDetails({
       )}
     >
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center">
+        <div className="flex items-center space-x-2">
           <Button
             variant="secondary"
             onClick={() => handleToggleCompletion(fullTask || task)}
@@ -178,6 +175,9 @@ export function TaskDetails({
               ? t('todo.markIncomplete')
               : t('todo.markComplete')}
           </Button>
+          {isSaving && (
+            <Loader2 className="h-4 w-4 animate-spin text-emerald-500" />
+          )}
         </div>
         <Button variant="ghost" size="sm" onClick={onClose}>
           <X className="h-4 w-4" />
@@ -209,11 +209,6 @@ export function TaskDetails({
               onChange={(e) => handleTitleChange(e, task)}
               className="flex-1 font-bold text-2xl! lg:text-3xl! border-none p-0 dark:bg-transparent dark:text-gray-100 shadow-none"
             />
-            {isSaving && (
-              <span className="text-xs text-gray-500 ml-2 mt-2">
-                {t('generic.loading')}
-              </span>
-            )}
           </div>
 
           <div className="text-xs text-gray-500 dark:text-gray-400 flex flex-row">
