@@ -26,11 +26,11 @@ export async function getAllUserTasks(
     .orderBy(tasksTable.createdAt)
 }
 
-export async function getTaskById(taskId: string, userId: string) {
+export async function getTaskById(taskId: string) {
   const [task] = await db
     .select()
     .from(tasksTable)
-    .where(and(eq(tasksTable.id, taskId), eq(tasksTable.userId, userId)))
+    .where(eq(tasksTable.id, taskId))
 
   const subTasks = await db
     .select()
@@ -68,19 +68,18 @@ export async function createTask(data: Omit<NewTask, 'id'>) {
 
 export async function updateTask(
   taskId: string,
-  userId: string,
   data: Partial<NewTask>,
 ) {
   return await db
     .update(tasksTable)
     .set(data)
-    .where(and(eq(tasksTable.id, taskId), eq(tasksTable.userId, userId)))
+    .where(eq(tasksTable.id, taskId))
     .returning()
 }
 
-export async function deleteTask(taskId: string, userId: string) {
+export async function deleteTask(taskId: string) {
   return await db
     .delete(tasksTable)
-    .where(and(eq(tasksTable.id, taskId), eq(tasksTable.userId, userId)))
+    .where(eq(tasksTable.id, taskId))
     .returning()
 }

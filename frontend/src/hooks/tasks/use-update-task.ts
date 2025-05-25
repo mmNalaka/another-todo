@@ -41,17 +41,9 @@ export function useUpdateTask<TData = Task>(
       },
       onSuccess: (data, variables) => {
         if (invalidateQueries) {
+          queryClient.invalidateQueries({ queryKey: ['tasks'] })
           queryClient.invalidateQueries({ queryKey: ['task', variables.id] })
-
-          if (!variables.listId) {
-            queryClient.invalidateQueries({ queryKey: ['tasks'] })
-          }
-
-          if (variables.listId) {
-            queryClient.invalidateQueries({
-              queryKey: ['lists', variables.listId],
-            })
-          }
+          queryClient.invalidateQueries({ queryKey: ['lists', variables.listId] })
         }
 
         if (showToasts) {

@@ -70,10 +70,10 @@ export interface List {
   isFrozen: boolean
   isShared: boolean
   color?: string
-  schema?: Array<SchemaField>
   createdAt: string
   updatedAt: string
   tasks?: Array<Task>
+  schema?: Array<SchemaField>
   collaborators?: Array<ListCollaborator>
 }
 
@@ -90,7 +90,8 @@ export interface ListCollaborator {
   listId: string
   userId: string
   role: string
-  user?: User
+  name?: string
+  email?: string
 }
 
 // ==============================

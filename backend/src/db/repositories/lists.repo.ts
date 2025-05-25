@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { eq, isNull, and } from 'drizzle-orm'
 
 import type { NewTaskList, TasksList } from '@/db/schemas/tasks.schema'
 
@@ -11,18 +11,37 @@ import {
 import { usersTable } from '@/db/schemas/users.schema'
 import { generateListId } from '@/utils/id'
 
+// Get all lists for a user - both owned and shared with them
 export async function getAllPersonalLists(
   userId: string,
   limit?: number,
   offset?: number,
 ) {
-  return await db
+  // First get lists owned by the user
+  const ownedLists = await db
     .select()
     .from(tasksListsTable)
     .where(eq(tasksListsTable.ownerId, userId))
-    .limit(limit || 20)
-    .offset(offset || 0)
+    .orderBy(tasksListsTable.createdAt);
+
+  // Then get lists where the user is a collaborator
+  const collaborativeLists = await db
+    .select({
+      list: tasksListsTable
+    })
+    .from(tasksListsTable)
+    .innerJoin(
+      listCollaborators,
+      eq(tasksListsTable.id, listCollaborators.listId)
+    )
+    .where(eq(listCollaborators.userId, userId))
     .orderBy(tasksListsTable.createdAt)
+    .then(rows => rows.map(row => row.list));
+
+  // Combine both lists and apply pagination
+  const allLists = [...ownedLists, ...collaborativeLists];
+  
+  return allLists;
 }
 
 export async function createPersonalList(data: NewTaskList) {
@@ -55,6 +74,13 @@ export async function getListCollaborators(id: string) {
     .from(listCollaborators)
     .innerJoin(usersTable, eq(listCollaborators.userId, usersTable.id))
     .where(eq(listCollaborators.listId, id))
+    .then((res) =>
+      res.map((u) => ({
+        ...u.collaborator,
+        name: u.user.name,
+        email: u.user.email,
+      })),
+    )
 }
 
 // Get list tasks
@@ -63,13 +89,16 @@ export async function getListTasks(id: string) {
     .select()
     .from(tasksListsTable)
     .innerJoin(tasksTable, eq(tasksListsTable.id, tasksTable.listId))
-    .where(eq(tasksListsTable.id, id))
+    .where(and(eq(tasksListsTable.id, id), isNull(tasksTable.parentTaskId)))
     .orderBy(tasksTable.createdAt)
     .then((res) => res.map((task) => task.tasks))
 }
 
 // Update a list by ID
-export async function updateList(id: string, data: Partial<Omit<TasksList, 'id' | 'ownerId' | 'createdAt' | 'updatedAt'>>) {
+export async function updateList(
+  id: string,
+  data: Partial<Omit<TasksList, 'id' | 'ownerId' | 'createdAt' | 'updatedAt'>>,
+) {
   return await db
     .update(tasksListsTable)
     .set({

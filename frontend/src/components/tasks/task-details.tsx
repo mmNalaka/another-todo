@@ -102,7 +102,7 @@ export function TaskDetails({
   ) => {
     const newTitle = e.target.value
     setTitle(newTitle)
-    debouncedSave({ id: task.id, title: newTitle })
+    debouncedSave({ id: task.id, listId: task.listId, title: newTitle })
   }
 
   // Handle description change with auto-save
@@ -112,34 +112,34 @@ export function TaskDetails({
     const newDescription = e.target.value
     setDescription(newDescription)
     if (isEditingDescription) {
-      debouncedSave({ id: task.id, description: newDescription })
+      debouncedSave({ id: task.id, listId: task.listId, description: newDescription })
     }
   }
 
   // Save description when exiting edit mode
   const handleUpdateDescription = (task: TaskUpdateData) => {
-    updateTask({ id: task.id, description: task.description })
+    updateTask({ id: task.id, listId: task.listId, description: task.description })
     setIsEditingDescription(false)
   }
 
   // Handle date selection
   const handleDateSelect = (date: Date | undefined, task: TaskUpdateData) => {
     if (date) {
-      updateTask({ id: task.id, dueDate: date.toISOString() })
+      updateTask({ id: task.id, listId: task.listId, dueDate: date.toISOString() })
     }
   }
 
   // Handle priority change
   const handlePriorityChange = (priority: Priority, task: TaskUpdateData) => {
-    updateTask({ id: task.id, priority })
+    updateTask({ id: task.id, listId: task.listId, priority })
   }
 
   // Handle toggle completion
   const handleToggleCompletion = (task: TaskUpdateData) => {
     updateTask({
       id: task.id,
-      isCompleted: !task.isCompleted,
       listId: task.listId,
+      isCompleted: !task.isCompleted,
     })
   }
 
@@ -367,6 +367,7 @@ export function TaskDetails({
               buttonLabel={t('tasks.sub.create.button')}
               parentId={task.id}
               onTaskCreated={refetch}
+              listId={fullTask?.listId ?? undefined}
             />
 
             {isLoading && <TaskListSkeleton count={2} />}

@@ -19,3 +19,7 @@ export const updateListBodySchema = z.object({
   isShared: z.boolean().optional(),
   isFrozen: z.boolean().optional(),
 })
+
+export const toggleListFrozenSchema = z.object({
+  isFrozen: z.boolean(),
+})

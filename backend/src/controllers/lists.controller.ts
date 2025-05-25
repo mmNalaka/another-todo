@@ -22,6 +22,7 @@ import { genericPaginationSchema } from '@/validations/common.validations'
 import {
   createListBodySchema,
   getListParamsSchema,
+  toggleListFrozenSchema,
   updateListBodySchema,
 } from '@/validations/lists.validations'
 import { generateListId } from '@/utils/id'
@@ -88,7 +89,7 @@ export const getListByIdHandler = factory.createHandlers(
     // Check if user is a collaborator when list is shared
     if (!isOwner && isShared) {
       const isCollaborator = collaborators.some(
-        (c) => c.collaborator.userId === userInfo.id,
+        (c) => c.userId === userInfo.id,
       )
       if (!isCollaborator) {
         return createErrorResponse(c, 'FORBIDDEN')
@@ -133,11 +134,11 @@ export const updateListHandler = factory.createHandlers(
       // Get collaborators and check if user is an editor
       const collaborators = await getListCollaborators(id)
       const userCollaborator = collaborators.find(
-        (c) => c.collaborator.userId === userInfo.id
+        (c) => c.userId === userInfo.id
       )
       
       // If user is not a collaborator or doesn't have editor role, return forbidden
-      if (!userCollaborator || userCollaborator.collaborator.role !== 'editor') {
+      if (!userCollaborator || userCollaborator.role !== 'editor') {
         return createErrorResponse(c, 'FORBIDDEN')
       }
     }
@@ -177,5 +178,35 @@ export const deleteListHandler = factory.createHandlers(
     }
 
     return createSuccessResponse(c, { success: true, id })
+  },
+)
+
+// PATCH /api/lists/:id/toggle-frozen - Toggle the frozen state of a list
+export const toggleListFrozenHandler = factory.createHandlers(
+  zValidator('param', getListParamsSchema),
+  zValidator('json', toggleListFrozenSchema),
+  async (c) => {
+    const userInfo = c.get('user' as any) as AuthenticatedUser
+    const { id } = c.req.valid('param')
+    const { isFrozen } = c.req.valid('json')
+
+    // Check if list exists and user has permission to update it
+    const existingList = await getListById(id)
+    if (!existingList) {
+      return createErrorResponse(c, 'NOT_FOUND')
+    }
+
+    // Only the owner can freeze/unfreeze the list
+    if (existingList.ownerId !== userInfo.id) {
+      return createErrorResponse(c, 'FORBIDDEN')
+    }
+
+    // Update the list's frozen state
+    const updatedList = await updateList(id, { isFrozen })
+    if (!updatedList) {
+      return createErrorResponse(c, 'INTERNAL_SERVER_ERROR')
+    }
+
+    return createSuccessResponse(c, updatedList)
   },
 )
