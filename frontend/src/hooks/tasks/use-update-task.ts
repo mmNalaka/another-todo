@@ -30,11 +30,13 @@ export function useUpdateTask<TData = Task>(
   } = options || {}
 
   const { mutate, mutateAsync, ...rest } = useMutation<TData, Error, Variables>({
-    mutationFn: (variables: Variables) =>
-      authenticatedFetch<TData>(`/tasks/${variables.id}`, {
+    mutationFn: (variables: Variables) => {
+      const {listId, ...rest} = variables
+      return authenticatedFetch<TData>(`/tasks/${variables.id}`, {
         method: 'PATCH',
-        body: JSON.stringify(variables),
-      }),
+        body: JSON.stringify(rest),
+      })
+    },
     onSuccess: (data, variables) => {
       if (invalidateQueries) {
         queryClient.invalidateQueries({ queryKey: ['task', variables.id] })
