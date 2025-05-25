@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { UseMutationOptions } from '@tanstack/react-query'
@@ -18,7 +19,7 @@ interface UpdateTaskOptions {
 }
 
 export function useUpdateTask<TData = Task>(
-  options?: UseMutationOptions<TData, Error, Variables> & UpdateTaskOptions
+  options?: UseMutationOptions<TData, Error, Variables> & UpdateTaskOptions,
 ) {
   const {
     showToasts = true,
@@ -29,48 +30,52 @@ export function useUpdateTask<TData = Task>(
     ...mutationOptions
   } = options || {}
 
-  const { mutate, mutateAsync, ...rest } = useMutation<TData, Error, Variables>({
-    mutationFn: (variables: Variables) => {
-      const {listId, ...rest} = variables
-      return authenticatedFetch<TData>(`/tasks/${variables.id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(rest),
-      })
-    },
-    onSuccess: (data, variables) => {
-      if (invalidateQueries) {
-        queryClient.invalidateQueries({ queryKey: ['task', variables.id] })
+  const { mutate, mutateAsync, ...rest } = useMutation<TData, Error, Variables>(
+    {
+      mutationFn: (variables: Variables) => {
+        const { listId, ...rest } = variables
+        return authenticatedFetch<TData>(`/tasks/${variables.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify(rest),
+        })
+      },
+      onSuccess: (data, variables) => {
+        if (invalidateQueries) {
+          queryClient.invalidateQueries({ queryKey: ['task', variables.id] })
 
-        if (!variables.listId) {
-          queryClient.invalidateQueries({ queryKey: ['tasks'] })
+          if (!variables.listId) {
+            queryClient.invalidateQueries({ queryKey: ['tasks'] })
+          }
+
+          if (variables.listId) {
+            queryClient.invalidateQueries({
+              queryKey: ['lists', variables.listId],
+            })
+          }
         }
 
-        if (variables.listId) {
-          queryClient.invalidateQueries({ queryKey: ['lists', variables.listId] })
+        if (showToasts) {
+          toast.success('Task updated successfully')
         }
-      }
 
-      if (showToasts) {
-        toast.success('Task updated successfully')
-      }
+        if (onSuccess) {
+          onSuccess(data as unknown as Task)
+        }
+      },
+      onError: (err, variables) => {
+        console.error('Task update error:', err)
 
-      if (onSuccess) {
-        onSuccess(data as unknown as Task)
-      }
+        if (showToasts) {
+          toast.error(errorMessage)
+        }
+
+        if (onError) {
+          onError(err, variables as Partial<Task>)
+        }
+      },
+      ...mutationOptions,
     },
-    onError: (err, variables) => {
-      console.error('Task update error:', err)
-      
-      if (showToasts) {
-        toast.error(errorMessage)
-      }
-
-      if (onError) {
-        onError(err, variables as Partial<Task>)
-      }
-    },
-    ...mutationOptions,
-  })
+  )
 
   return {
     updateTask: mutate,
