@@ -1,5 +1,15 @@
+/* eslint-disable no-shadow */
 import { useCallback, useEffect, useState } from 'react'
-import { Calendar, Check, ChevronLeft, Edit, Flag, Loader2, Save, X } from 'lucide-react'
+import {
+  Calendar,
+  Check,
+  ChevronLeft,
+  Edit,
+  Flag,
+  Loader2,
+  Save,
+  X,
+} from 'lucide-react'
 import { format } from 'date-fns'
 import type { Priority, Task } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -126,7 +136,11 @@ export function TaskDetails({
 
   // Handle toggle completion
   const handleToggleCompletion = (task: TaskUpdateData) => {
-    updateTask({ id: task.id, isCompleted: !task.isCompleted, listId: task.listId })
+    updateTask({
+      id: task.id,
+      isCompleted: !task.isCompleted,
+      listId: task.listId,
+    })
   }
 
   // Handle select task
@@ -186,7 +200,7 @@ export function TaskDetails({
 
       <div className="flex-1 overflow-auto p-4 pt-0 space-y-6">
         <div className="space-y-1">
-          <div className="flex flex-row items-center text-muted-foreground m-0">
+          <div className="flex flex-row items-center text-muted-foreground m-0 h-8">
             {isSubtask && onNavigateBack && (
               <Button
                 variant="ghost"
