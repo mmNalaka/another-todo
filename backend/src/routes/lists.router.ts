@@ -2,8 +2,10 @@ import { Hono } from 'hono'
 
 import {
   createListHandler,
+  deleteListHandler,
   getAllListHandler,
   getListByIdHandler,
+  updateListHandler,
 } from '@/controllers/lists.controller'
 import { authenticatedMiddleware } from '@/middlewares/authenticated.mw'
 
@@ -16,5 +18,7 @@ lists.use(authenticatedMiddleware())
 lists.get('/', ...getAllListHandler)
 lists.post('/', ...createListHandler)
 lists.get('/:id', ...getListByIdHandler)
+lists.patch('/:id', ...updateListHandler)
+lists.delete('/:id', ...deleteListHandler)
 
 export default lists

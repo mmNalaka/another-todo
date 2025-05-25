@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 
-import type { NewTaskList } from '@/db/schemas/tasks.schema'
+import type { NewTaskList, TasksList } from '@/db/schemas/tasks.schema'
 
 import db from '@/db'
 import {
@@ -66,4 +66,26 @@ export async function getListTasks(id: string) {
     .where(eq(tasksListsTable.id, id))
     .orderBy(tasksTable.createdAt)
     .then((res) => res.map((task) => task.tasks))
+}
+
+// Update a list by ID
+export async function updateList(id: string, data: Partial<Omit<TasksList, 'id' | 'ownerId' | 'createdAt' | 'updatedAt'>>) {
+  return await db
+    .update(tasksListsTable)
+    .set({
+      ...data,
+      updatedAt: new Date(),
+    })
+    .where(eq(tasksListsTable.id, id))
+    .returning()
+    .then((res) => res[0])
+}
+
+// Delete a list by ID
+export async function deleteList(id: string) {
+  return await db
+    .delete(tasksListsTable)
+    .where(eq(tasksListsTable.id, id))
+    .returning()
+    .then((res) => res[0])
 }
