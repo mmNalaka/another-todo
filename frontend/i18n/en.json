@@ -76,6 +76,11 @@
   "tasks.taskCreated": "Created:",
   "tasks.priority.none": "None",
 
+  "tasks.filter.all": "All",
+  "tasks.filter.uncompleted": "Active",
+  "tasks.filter.completed": "Completed",
+  "tasks.filter.today": "Today",
+
   "tasks.sub.title": "Subtasks",
   "tasks.sub.create.button": "Create new subtask",
   "tasks.sub.empty.message": "No subtasks yet",

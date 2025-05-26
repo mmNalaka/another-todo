@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
+import { Calendar, CheckSquare, Filter } from 'lucide-react'
 import type { Task } from '@/lib/types'
 import { useLocalization } from '@/hooks/use-localization'
 import { listQueryOptions } from '@/hooks/lists/use-fetch-list'
@@ -18,8 +19,11 @@ import { useDebouncedSave } from '@/hooks/use-debounced-save'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { NotFound } from '@/components/ui/not-found'
 import { useAuth } from '@/providers/auth-provider'
+import { TaskFilterDropdown } from '@/components/tasks/task-filter-dropdown'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 export const Route = createFileRoute('/_auth/lists/$listId')({
   loader: async ({ context: { queryClient }, params: { listId } }) => {
@@ -31,6 +35,11 @@ export const Route = createFileRoute('/_auth/lists/$listId')({
     }
   },
   component: RouteComponent,
+  validateSearch: (search) => {
+    return {
+      filter: search.filter || 'all',
+    }
+  },
 })
 
 function RouteComponent() {
@@ -41,6 +50,9 @@ function RouteComponent() {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
   // Navigation stack to keep track of task hierarchy
   const [navigationStack, setNavigationStack] = useState<Array<Task>>([])
+  
+  // Get filter from URL search params
+  const { filter } = useSearch({ from: '/_auth/lists/$listId' })
 
   // Handle errors with a try-catch block
   try {
@@ -75,7 +87,33 @@ function RouteComponent() {
       setDescription(listData.description || '')
     }, [listData])
 
-    const tasks = listData.tasks ?? []
+    // Set up filter based on the URL parameter
+    const taskFilter = {
+      completed: filter === 'completed' ? true : filter === 'uncompleted' ? false : undefined,
+      dueDate: filter === 'today' ? 'today' as const : undefined,
+    }
+    
+    // Filter tasks based on the selected filter
+    let filteredTasks = listData.tasks ?? []
+    
+    if (taskFilter.completed !== undefined) {
+      filteredTasks = filteredTasks.filter(task => task.isCompleted === taskFilter.completed)
+    }
+    
+    if (taskFilter.dueDate === 'today') {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const tomorrow = new Date(today)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      
+      filteredTasks = filteredTasks.filter(task => {
+        if (!task.dueDate) return false
+        const dueDate = new Date(task.dueDate)
+        return dueDate >= today && dueDate < tomorrow
+      })
+    }
+    
+    const tasks = filteredTasks
 
     // Get the currently viewed task (either from root tasks or navigation stack)
     const currentTask = selectedTaskId
@@ -186,8 +224,40 @@ function RouteComponent() {
                 />
               </>
             )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                  <Filter className="h-4 w-4" />
+                  {filter === 'completed' ? 'Completed' : 
+                   filter === 'today' ? 'Today' : 
+                   'Active'}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate({ to: `/lists/${listId}`, search: { filter: 'uncompleted' } })}>
+                  <div className="flex items-center gap-2">
+                    {filter === 'uncompleted' && <span className="text-primary">✓</span>}
+                    Active
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate({ to: `/lists/${listId}`, search: { filter: 'completed' } })}>
+                  <div className="flex items-center gap-2">
+                    <CheckSquare className="h-4 w-4 mr-1" />
+                    {filter === 'completed' && <span className="text-primary">✓</span>}
+                    Completed
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate({ to: `/lists/${listId}`, search: { filter: 'today' } })}>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    {filter === 'today' && <span className="text-primary">✓</span>}
+                    Today
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Badge variant="secondary" className="h-8">
-              {listData.tasks?.length || 0} {t('tasks.title')}
+              {tasks.length || 0} {t('tasks.title')}
             </Badge>
           </div>
 
@@ -226,8 +296,11 @@ function RouteComponent() {
                   />
                 </>
               )}
+              
+              <TaskFilterDropdown currentFilter={filter as string} listId={listId} />
+              
               <Badge variant="secondary" className="ml-2 h-8">
-                {listData.tasks?.length || 0} {t('tasks.title')}
+                {tasks.length || 0} {t('tasks.title')}
               </Badge>
             </div>
           </div>

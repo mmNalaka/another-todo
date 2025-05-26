@@ -28,6 +28,7 @@ import {
 } from '@/hooks/lists/use-list-collaborators'
 import { useLocalization } from '@/hooks/use-localization'
 import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 
 type ShareListDialogProps = {
   listId: string
@@ -100,15 +101,17 @@ export function ShareListDialog({
                 )
                 toast.success(t('lists.share.linkCopied'))
               }}
-              className="flex-shrink-0 w-full sm:w-auto h-8 text-xs"
+              className="flex-shrink-0 w-full h-8 text-xs"
             >
               <Copy className="h-3 w-3 mr-1" />
               {t('lists.share.copyLink')}
             </Button>
           </div>
+          
+          <Separator />
 
           {isOwner && (
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex flex-col sm:flex-row gap-1 items-end" >
               <div className="grid w-full gap-1">
                 <label htmlFor="email" className="text-xs font-medium">
                   {t('lists.share.emailLabel')}
@@ -134,7 +137,7 @@ export function ShareListDialog({
                 >
                   <SelectTrigger
                     id="role"
-                    className="w-full sm:w-[90px] h-8 text-xs"
+                    className="w-full sm:w-[90px] h-8! text-xs"
                   >
                     <SelectValue
                       placeholder={t('lists.share.rolePlaceholder')}
@@ -157,11 +160,12 @@ export function ShareListDialog({
                   disabled={isAddingCollaborator}
                 >
                   <UserPlus className="h-3 w-3 mr-1" />
-                  {t('lists.share.addButton')}
                 </Button>
               </div>
             </div>
           )}
+
+<Separator />
 
           {collaborators.length > 0 && (
             <div className="mt-2">
