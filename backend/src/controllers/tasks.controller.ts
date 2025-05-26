@@ -1,4 +1,5 @@
 import { zValidator } from '@hono/zod-validator'
+import { z } from 'zod'
 
 import type { AuthenticatedUser } from '@/middlewares/authenticated.mw'
 
@@ -23,6 +24,7 @@ import {
   taskIdParamSchema,
   updateTaskBodySchema,
   reorderTasksBodySchema,
+  taskFilterSchema,
 } from '@/validations/tasks.validations'
 import { getListById, getListCollaborators } from '@/db/repositories/lists.repo'
 import { Task, TasksList } from '@/db/schemas/tasks.schema'
@@ -70,15 +72,23 @@ async function checkListTaskPermission(
   return { allowed: true, error: null, list }
 }
 
+
+
 // GET /api/tasks - Get all tasks for a user
 export const getAllTasksHandler = factory.createHandlers(
-  zValidator('query', genericPaginationSchema),
+  zValidator('query', taskFilterSchema),
   async (c) => {
     // Get user info from context (already set by the middleware)
     const userInfo = c.get('user' as any) as AuthenticatedUser
-    const { limit, offset } = c.req.valid('query')
+    const { limit, offset, completed, dueDate } = c.req.valid('query')
 
-    const tasks = await getAllUserTasks(userInfo.id, limit, offset)
+    // Build filter object based on query parameters
+    const filter = {
+      ...(completed !== undefined && { completed: completed === 'true' }),
+      ...(dueDate && { dueDate }),
+    }
+
+    const tasks = await getAllUserTasks(userInfo.id, limit, offset, filter)
 
     if (!tasks) {
       return createErrorResponse(c, 'INTERNAL_SERVER_ERROR')

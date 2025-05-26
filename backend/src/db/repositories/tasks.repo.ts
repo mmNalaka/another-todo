@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNull } from 'drizzle-orm'
+import { and, asc, desc, eq, isNull, gte, lt } from 'drizzle-orm'
 
 import type { NewTask } from '@/db/schemas/tasks.schema'
 
@@ -10,17 +10,45 @@ export async function getAllUserTasks(
   userId: string,
   limit?: number,
   offset?: number,
+  filter?: {
+    completed?: boolean;
+    dueDate?: 'today' | 'all';
+  },
 ) {
+  // Build the where conditions
+  let conditions = [
+    eq(tasksTable.userId, userId),
+    isNull(tasksTable.parentTaskId),
+    isNull(tasksTable.listId),
+  ];
+
+  if (filter?.completed !== undefined) {
+    conditions.push(eq(tasksTable.isCompleted, filter.completed));
+  }
+
+  if (filter?.dueDate === 'today') {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    // Get tasks due today (dueDate >= start of today AND dueDate < start of tomorrow)
+    // Only add this condition if there are tasks with due dates
+    conditions.push(
+      gte(tasksTable.dueDate, today)
+    );
+    conditions.push(
+      lt(tasksTable.dueDate, tomorrow)
+    );
+  }
+
+  // Filter out any undefined conditions
+  const validConditions = conditions.filter(Boolean);
+  
   return await db
     .select()
     .from(tasksTable)
-    .where(
-      and(
-        eq(tasksTable.userId, userId),
-        isNull(tasksTable.parentTaskId),
-        isNull(tasksTable.listId),
-      ),
-    )
+    .where(and(...validConditions))
     .limit(limit || 20)
     .offset(offset || 0)
     .orderBy(asc(tasksTable.position), desc(tasksTable.createdAt))

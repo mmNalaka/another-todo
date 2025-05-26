@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { genericPaginationSchema } from '@/validations/common.validations'
+
 export const createTaskBodySchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
@@ -36,4 +38,10 @@ export const taskPositionSchema = z.object({
 export const reorderTasksBodySchema = z.object({
   listId: z.string().optional().nullable().default(null),
   tasks: z.array(taskPositionSchema),
+})
+
+// Extended query schema for task filtering
+export const taskFilterSchema = genericPaginationSchema.extend({
+  completed: z.enum(['true', 'false']).optional(),
+  dueDate: z.enum(['today', 'all']).optional(),
 })

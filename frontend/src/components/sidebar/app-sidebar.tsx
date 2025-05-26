@@ -23,18 +23,25 @@ const data = {
     avatar: '',
   },
   navMain: [
-    { url: '/tasks', title: 'Home', icon: Home },
+    { 
+      url: '/tasks?filter=uncompleted', 
+      title: 'Home', 
+      icon: Home,
+      searchParams: { filter: 'uncompleted' } 
+    },
     {
-      url: '/tasks',
+      url: '/tasks?filter=completed',
       title: 'Completed',
       icon: CheckSquare,
       isActive: false,
+      searchParams: { filter: 'completed' }
     },
     {
-      url: '/tasks',
+      url: '/tasks?filter=today',
       title: 'Today',
       icon: Calendar,
       isActive: false,
+      searchParams: { filter: 'today' }
     },
   ],
 }

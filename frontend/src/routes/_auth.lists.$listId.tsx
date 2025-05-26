@@ -182,7 +182,7 @@ function RouteComponent() {
                   list={listData}
                   variant="ghost"
                   showIcon={true}
-                  onSuccess={() => navigate({ to: '/tasks' })}
+                  onSuccess={() => navigate({ to: '/tasks', search: { filter: 'uncompleted' } })}
                 />
               </>
             )}
@@ -222,7 +222,7 @@ function RouteComponent() {
                   <ListDeleteButton
                     list={listData}
                     showIcon={true}
-                    onSuccess={() => navigate({ to: '/tasks' })}
+                    onSuccess={() => navigate({ to: '/tasks', search: { filter: 'uncompleted' } })}
                   />
                 </>
               )}

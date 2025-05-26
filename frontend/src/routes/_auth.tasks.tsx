@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useSearch } from '@tanstack/react-router'
 import type { Task } from '@/lib/types'
 import { TaskCreator } from '@/components/tasks/task-creator'
 import { TaskListSkeleton } from '@/components/tasks/task-list-skeleton'
@@ -15,15 +15,26 @@ import { useDebouncedSave } from '@/hooks/use-debounced-save'
 
 export const Route = createFileRoute('/_auth/tasks')({
   component: RouteComponent,
+  validateSearch: (search) => {
+    return {
+      filter: search.filter || 'uncompleted',
+    }
+  },
 })
 
 function RouteComponent() {
   const { t } = useLocalization()
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
-  // Navigation stack to keep track of task hierarchy
   const [navigationStack, setNavigationStack] = useState<Array<Task>>([])
+  
+  const { filter } = useSearch({ from: '/_auth/tasks' })
+  
+  const taskFilter = {
+    completed: filter === 'completed' ? true : filter === 'uncompleted' ? false : undefined,
+    dueDate: filter === 'today' ? 'today' as const : undefined,
+  }
 
-  const { tasks, isLoading } = useFetchTasks()
+  const { tasks, isLoading } = useFetchTasks(taskFilter)
   const { updateTask } = useUpdateTask()
   const { updateTaskPositions } = useUpdateTaskPositions()
   
