@@ -1,4 +1,4 @@
-# Ubiquiti Todo - Full Stack Developer Home Assignment
+# Ubiquiti Todo
 
 ## User stories
 
