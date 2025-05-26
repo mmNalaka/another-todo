@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import type { Task } from '@/lib/types'
 import { useLocalization } from '@/hooks/use-localization'
@@ -10,6 +10,7 @@ import { TaskCreator } from '@/components/tasks/task-creator'
 import { TaskDetails } from '@/components/tasks/task-details'
 import { ShareListDialog } from '@/components/todo/share-list-dialog'
 import { FreezeListButton } from '@/components/todo/freeze-list-button'
+import { ListDeleteButton } from '@/components/todo/list-delete-button'
 import { useUpdateTask } from '@/hooks/tasks/use-update-task'
 import { useUpdateList } from '@/hooks/lists/use-update-list'
 import { useDebouncedSave } from '@/hooks/use-debounced-save'
@@ -34,6 +35,7 @@ export const Route = createFileRoute('/_auth/lists/$listId')({
 function RouteComponent() {
   const { t } = useLocalization()
   const { user } = useAuth()
+  const navigate = useNavigate()
   const listId = Route.useParams().listId
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
   // Navigation stack to keep track of task hierarchy
@@ -166,13 +168,21 @@ function RouteComponent() {
                 </Badge>
               )}
               {isOwner && (
-                <FreezeListButton
-                  isFrozen={listData.isFrozen}
-                  listId={listData.id}
-                  isOwner={isOwner}
-                />
+                <>
+                  <FreezeListButton
+                    isFrozen={listData.isFrozen}
+                    listId={listData.id}
+                    isOwner={isOwner}
+                  />
+                  <ListDeleteButton
+                    list={listData}
+                    variant="ghost"
+                    showIcon={true}
+                    onSuccess={() => navigate({ to: '/tasks' })}
+                  />
+                </>
               )}
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant="secondary" className="ml-2 h-8">
                 {listData.tasks?.length || 0} {t('tasks.title')}
               </Badge>
             </div>

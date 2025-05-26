@@ -71,7 +71,7 @@ export function ShareListDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
           className={className}
           aria-label={t('lists.share.label') as string}
