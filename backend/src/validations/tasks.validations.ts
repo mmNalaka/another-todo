@@ -27,3 +27,13 @@ export const updateTaskBodySchema = z.object({
 export const taskIdParamSchema = z.object({
   id: z.string(),
 })
+
+export const taskPositionSchema = z.object({
+  id: z.string(),
+  position: z.number(),
+})
+
+export const reorderTasksBodySchema = z.object({
+  listId: z.string(),
+  tasks: z.array(taskPositionSchema),
+})

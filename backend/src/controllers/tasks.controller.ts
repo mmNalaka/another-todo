@@ -8,6 +8,7 @@ import {
   getAllUserTasks,
   getTaskById,
   updateTask,
+  updateTaskPositions,
 } from '@/db/repositories/tasks.repo'
 import { createErrorResponse, ErrorCode } from '@/utils/error.utils'
 import { factory } from '@/utils/hono.utils'
@@ -21,6 +22,7 @@ import {
   createTaskBodySchema,
   taskIdParamSchema,
   updateTaskBodySchema,
+  reorderTasksBodySchema,
 } from '@/validations/tasks.validations'
 import { getListById, getListCollaborators } from '@/db/repositories/lists.repo'
 import { Task, TasksList } from '@/db/schemas/tasks.schema'
@@ -221,6 +223,57 @@ export const updateTaskHandler = factory.createHandlers(
     }
 
     return createSuccessResponse(c, updatedTask)
+  },
+)
+
+// PATCH /api/tasks/reorder - Reorder tasks
+export const reorderTasksHandler = factory.createHandlers(
+  zValidator('json', reorderTasksBodySchema),
+  async (c) => {
+    const userInfo = c.get('user' as any) as AuthenticatedUser
+    const { listId, tasks } = c.req.valid('json')
+    
+    // Get the list to check permissions
+    const list = await getListById(listId)
+    if (!list) {
+      return createErrorResponse(c, 'NOT_FOUND', 'List not found')
+    }
+    
+    // Check if user is the owner or has editor permissions
+    const isOwner = userInfo.id === list.ownerId
+    
+    // Only the owner can modify a frozen list
+    if (!isOwner && list.isFrozen) {
+      return createErrorResponse(c, 'FORBIDDEN', 'List is frozen and cannot be modified')
+    }
+    
+    // Only the owner can modify a non-shared list
+    if (!isOwner && !list.isShared) {
+      return createErrorResponse(c, 'FORBIDDEN', 'No permission to modify this list')
+    }
+    
+    // If not the owner, check if user is a collaborator with editor role
+    if (!isOwner) {
+      const collaborators = await getListCollaborators(list.id)
+      const userCollaborator = collaborators.find(
+        (collaborator) => collaborator.userId === userInfo.id
+      )
+      
+      const hasEditorPermission = userCollaborator?.role === 'editor'
+      
+      if (!hasEditorPermission) {
+        return createErrorResponse(c, 'FORBIDDEN', 'No permission to modify tasks in this list')
+      }
+    }
+    
+    // Update the task positions
+    const updatedTasks = await updateTaskPositions(tasks)
+    
+    if (!updatedTasks) {
+      return createErrorResponse(c, 'INTERNAL_SERVER_ERROR', 'Failed to update task positions')
+    }
+    
+    return createSuccessResponse(c, updatedTasks)
   },
 )
 

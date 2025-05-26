@@ -12,6 +12,7 @@ import { ShareListDialog } from '@/components/todo/share-list-dialog'
 import { FreezeListButton } from '@/components/todo/freeze-list-button'
 import { ListDeleteButton } from '@/components/todo/list-delete-button'
 import { useUpdateTask } from '@/hooks/tasks/use-update-task'
+import { useUpdateTaskPositions } from '@/hooks/tasks/use-update-task-positions'
 import { useUpdateList } from '@/hooks/lists/use-update-list'
 import { useDebouncedSave } from '@/hooks/use-debounced-save'
 import { Input } from '@/components/ui/input'
@@ -52,6 +53,7 @@ function RouteComponent() {
     // Set up hooks for updating tasks and lists
     const { updateTask } = useUpdateTask()
     const { updateList } = useUpdateList()
+    const { updateTaskPositions } = useUpdateTaskPositions()
 
     // Check if the current user is the owner of the list
     const isOwner = listData.ownerId === user?.id
@@ -141,6 +143,19 @@ function RouteComponent() {
         id: task.id,
         isCompleted: !task.isCompleted,
         listId: task.listId,
+      })
+    }
+
+    const handleReorderTasks = (reorderedTasks: Array<Task>) => {
+      // Extract just the id and position for the API call
+      const taskPositions = reorderedTasks.map((task) => ({
+        id: task.id,
+        position: task.position,
+      }))
+
+      updateTaskPositions({
+        listId,
+        tasks: taskPositions,
       })
     }
 
@@ -253,6 +268,7 @@ function RouteComponent() {
                 onSelectTask={handleSelectTask}
                 selectedTask={selectedTaskId}
                 onToggleCompletion={handleToggleCompletion}
+                onReorderTasks={handleReorderTasks}
               />
             </div>
           </div>

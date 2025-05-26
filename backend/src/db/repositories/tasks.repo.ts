@@ -67,14 +67,61 @@ export async function createTask(data: Omit<NewTask, 'id'>) {
 }
 
 export async function updateTask(
-  taskId: string,
+  id: string,
   data: Partial<NewTask>,
-) {
-  return await db
-    .update(tasksTable)
-    .set(data)
-    .where(eq(tasksTable.id, taskId))
-    .returning()
+): Promise<NewTask | null> {
+  try {
+    const [updatedTask] = await db
+      .update(tasksTable)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(tasksTable.id, id))
+      .returning()
+
+    return updatedTask
+  } catch (error) {
+    console.error('Error updating task:', error)
+    return null
+  }
+}
+
+/**
+ * Update positions of multiple tasks in a transaction
+ */
+export async function updateTaskPositions(
+  tasks: { id: string; position: number }[],
+): Promise<NewTask[] | null> {
+  try {
+    // Use a transaction to ensure all updates succeed or fail together
+    const updatedTasks = await db.transaction(async (tx) => {
+      const results: NewTask[] = []
+      
+      // Update each task's position
+      for (const task of tasks) {
+        const [updatedTask] = await tx
+          .update(tasksTable)
+          .set({
+            position: task.position,
+            updatedAt: new Date(),
+          })
+          .where(eq(tasksTable.id, task.id))
+          .returning()
+        
+        if (updatedTask) {
+          results.push(updatedTask)
+        }
+      }
+      
+      return results
+    })
+    
+    return updatedTasks
+  } catch (error) {
+    console.error('Error updating task positions:', error)
+    return null
+  }
 }
 
 export async function deleteTask(taskId: string) {

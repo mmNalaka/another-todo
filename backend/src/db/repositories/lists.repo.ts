@@ -1,4 +1,4 @@
-import { eq, isNull, and } from 'drizzle-orm'
+import { and, asc, desc, eq, isNull } from 'drizzle-orm'
 
 import type { NewTaskList, TasksList } from '@/db/schemas/tasks.schema'
 
@@ -12,36 +12,32 @@ import { usersTable } from '@/db/schemas/users.schema'
 import { generateListId } from '@/utils/id'
 
 // Get all lists for a user - both owned and shared with them
-export async function getAllPersonalLists(
-  userId: string,
-  limit?: number,
-  offset?: number,
-) {
+export async function getAllPersonalLists(userId: string) {
   // First get lists owned by the user
   const ownedLists = await db
     .select()
     .from(tasksListsTable)
     .where(eq(tasksListsTable.ownerId, userId))
-    .orderBy(tasksListsTable.createdAt);
+    .orderBy(tasksListsTable.createdAt)
 
   // Then get lists where the user is a collaborator
   const collaborativeLists = await db
     .select({
-      list: tasksListsTable
+      list: tasksListsTable,
     })
     .from(tasksListsTable)
     .innerJoin(
       listCollaborators,
-      eq(tasksListsTable.id, listCollaborators.listId)
+      eq(tasksListsTable.id, listCollaborators.listId),
     )
     .where(eq(listCollaborators.userId, userId))
     .orderBy(tasksListsTable.createdAt)
-    .then(rows => rows.map(row => row.list));
+    .then((rows) => rows.map((row) => row.list))
 
   // Combine both lists and apply pagination
-  const allLists = [...ownedLists, ...collaborativeLists];
-  
-  return allLists;
+  const allLists = [...ownedLists, ...collaborativeLists]
+
+  return allLists
 }
 
 export async function createPersonalList(data: NewTaskList) {
@@ -90,7 +86,7 @@ export async function getListTasks(id: string) {
     .from(tasksListsTable)
     .innerJoin(tasksTable, eq(tasksListsTable.id, tasksTable.listId))
     .where(and(eq(tasksListsTable.id, id), isNull(tasksTable.parentTaskId)))
-    .orderBy(tasksTable.createdAt)
+    .orderBy(asc(tasksTable.position), desc(tasksTable.createdAt))
     .then((res) => res.map((task) => task.tasks))
 }
 

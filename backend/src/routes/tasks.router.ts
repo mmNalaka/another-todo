@@ -6,6 +6,7 @@ import {
   getAllTasksHandler,
   getTaskByIdHandler,
   updateTaskHandler,
+  reorderTasksHandler,
 } from '@/controllers/tasks.controller'
 import { authenticatedMiddleware } from '@/middlewares/authenticated.mw'
 
@@ -21,8 +22,13 @@ tasksRouter.get('/', ...getAllTasksHandler)
 tasksRouter.get('/:id', ...getTaskByIdHandler)
 // POST / - Create a new task
 tasksRouter.post('/', ...createTaskHandler)
+
+// PATCH /reorder - Reorder tasks (must come before /:id route)
+tasksRouter.patch('/reorder', ...reorderTasksHandler)
+
 // PATCH /:id - Update a task by id
 tasksRouter.patch('/:id', ...updateTaskHandler)
+
 // DELETE /:id - Delete a task by id
 tasksRouter.delete('/:id', ...deleteTaskHandler)
 
