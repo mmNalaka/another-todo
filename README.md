@@ -96,23 +96,23 @@ To run the application in a production-like environment locally, follow these st
 
 3. Build and start the containers using the production Docker Compose configuration:
    ```bash
-   docker compose -f docker-compose.prod.yaml up --build
+   docker compose -f docker-compose.local.yaml up --build
    ```
 
 4. Wait for all services to start. You should see logs indicating that the backend, frontend, and database are running.
 
 5. Access the application:
-   - Frontend: http://localhost:8080
+   - Frontend: http://localhost:3000
    - Backend API: http://localhost:4000
 
 ### Stopping the application
 
 To stop the application, press `Ctrl+C` in the terminal where it's running, or run:
 ```bash
-docker compose -f docker-compose.prod.yaml down
+docker compose -f docker-compose.local.yaml down
 ```
 
 To completely remove all data and start fresh, add the `-v` flag to remove volumes:
 ```bash
-docker compose -f docker-compose.prod.yaml down -v
+docker compose -f docker-compose.local.yaml down -v
 ```
