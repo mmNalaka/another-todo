@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Copy, Link2, Share2, UserPlus, X } from 'lucide-react'
+import { Copy, Share2, UserPlus, X } from 'lucide-react'
 
+import type { ListCollaborator } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -20,19 +21,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useAddCollaborator } from '@/hooks/lists/use-list-collaborators'
-import { useLocalization } from '@/hooks/use-localization'
-import { Badge } from '@/components/ui/badge'
-import type { ListCollaborator } from '@/lib/types'
 import {
+  useAddCollaborator,
   useRemoveCollaborator,
   useUpdateCollaboratorRole,
 } from '@/hooks/lists/use-list-collaborators'
+import { useLocalization } from '@/hooks/use-localization'
+import { Badge } from '@/components/ui/badge'
 
 type ShareListDialogProps = {
   listId: string
   className?: string
-  collaborators?: ListCollaborator[]
+  collaborators?: Array<ListCollaborator>
   isOwner: boolean
 }
 
@@ -52,7 +52,7 @@ export function ShareListDialog({
 
   const handleAddCollaborator = () => {
     if (!email) {
-      toast.error(t('lists.share.emailRequired') as string)
+      toast.error(t('lists.share.emailRequired'))
       return
     }
 
@@ -74,16 +74,18 @@ export function ShareListDialog({
           variant="outline"
           size="icon"
           className={className}
-          aria-label={t('lists.share.label') as string}
+          aria-label={t('lists.share.label')}
         >
           <Share2 className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto w-[95vw] p-4">
         <DialogHeader className="pb-2">
-          <DialogTitle className="text-lg">{t('lists.share.title') as string}</DialogTitle>
+          <DialogTitle className="text-lg">
+            {t('lists.share.title')}
+          </DialogTitle>
           <DialogDescription className="text-xs sm:text-sm">
-            {t('lists.share.description') as string}
+            {t('lists.share.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -96,12 +98,12 @@ export function ShareListDialog({
                 navigator.clipboard.writeText(
                   `${window.location.origin}/lists/${listId}`,
                 )
-                toast.success(t('lists.share.linkCopied') as string)
+                toast.success(t('lists.share.linkCopied'))
               }}
               className="flex-shrink-0 w-full sm:w-auto h-8 text-xs"
             >
               <Copy className="h-3 w-3 mr-1" />
-              {t('lists.share.copyLink') as string}
+              {t('lists.share.copyLink')}
             </Button>
           </div>
 
@@ -109,12 +111,12 @@ export function ShareListDialog({
             <div className="flex flex-col sm:flex-row gap-2">
               <div className="grid w-full gap-1">
                 <label htmlFor="email" className="text-xs font-medium">
-                  {t('lists.share.emailLabel') as string}
+                  {t('lists.share.emailLabel')}
                 </label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder={t('lists.share.emailPlaceholder') as string}
+                  placeholder={t('lists.share.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="h-8 text-xs"
@@ -122,7 +124,7 @@ export function ShareListDialog({
               </div>
               <div className="grid gap-1">
                 <label htmlFor="role" className="text-xs font-medium">
-                  {t('lists.share.roleLabel') as string}
+                  {t('lists.share.roleLabel')}
                 </label>
                 <Select
                   value={role}
@@ -130,17 +132,20 @@ export function ShareListDialog({
                     setRole(value as 'editor' | 'viewer')
                   }
                 >
-                  <SelectTrigger id="role" className="w-full sm:w-[90px] h-8 text-xs">
+                  <SelectTrigger
+                    id="role"
+                    className="w-full sm:w-[90px] h-8 text-xs"
+                  >
                     <SelectValue
-                      placeholder={t('lists.share.rolePlaceholder') as string}
+                      placeholder={t('lists.share.rolePlaceholder')}
                     />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="editor" className="text-xs">
-                      {t('lists.share.roleEditor') as string}
+                      {t('lists.share.roleEditor')}
                     </SelectItem>
                     <SelectItem value="viewer" className="text-xs">
-                      {t('lists.share.roleViewer') as string}
+                      {t('lists.share.roleViewer')}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -152,7 +157,7 @@ export function ShareListDialog({
                   disabled={isAddingCollaborator}
                 >
                   <UserPlus className="h-3 w-3 mr-1" />
-                  {t('lists.share.addButton') as string}
+                  {t('lists.share.addButton')}
                 </Button>
               </div>
             </div>
@@ -161,7 +166,7 @@ export function ShareListDialog({
           {collaborators.length > 0 && (
             <div className="mt-2">
               <h3 className="text-xs font-medium mb-1">
-                {t('lists.share.collaboratorsTitle') as string}
+                {t('lists.share.collaboratorsTitle')}
               </h3>
               <div className="space-y-1">
                 {collaborators.map((collaborator) => (
@@ -183,7 +188,7 @@ export function ShareListDialog({
             onClick={() => setOpen(false)}
             className="h-8 text-xs"
           >
-            {t('generic.close') as string}
+            {t('generic.close')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -219,9 +224,9 @@ function CollaboratorItem({
     <div className="flex items-center justify-between py-2 px-3 rounded-md bg-secondary/50">
       <div className="flex items-center gap-2">
         <div className="flex flex-col">
-          <span className="text-sm font-medium">{collaborator?.name}</span>
+          <span className="text-sm font-medium">{collaborator.name}</span>
           <span className="text-xs text-muted-foreground">
-            {collaborator?.email}
+            {collaborator.email}
           </span>
         </div>
       </div>
@@ -238,10 +243,10 @@ function CollaboratorItem({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="editor">
-                  {t('lists.share.roleEditor') as string}
+                  {t('lists.share.roleEditor')}
                 </SelectItem>
                 <SelectItem value="viewer">
-                  {t('lists.share.roleViewer') as string}
+                  {t('lists.share.roleViewer')}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -260,8 +265,8 @@ function CollaboratorItem({
             variant={collaborator.role === 'editor' ? 'default' : 'secondary'}
           >
             {collaborator.role === 'editor'
-              ? (t('lists.share.roleEditor') as string)
-              : (t('lists.share.roleViewer') as string)}
+              ? t('lists.share.roleEditor')
+              : t('lists.share.roleViewer')}
           </Badge>
         )}
       </div>

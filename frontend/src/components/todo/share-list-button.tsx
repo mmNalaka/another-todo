@@ -31,7 +31,7 @@ export function ShareListButton({ listId, className }: ShareListButtonProps) {
     try {
       await navigator.clipboard.writeText(url)
       setCopied(true)
-      toast.success(t('lists.share.copied') as string)
+      toast.success(t('lists.share.copied'))
       
       // Reset copied state after 2 seconds
       setTimeout(() => {
@@ -39,7 +39,7 @@ export function ShareListButton({ listId, className }: ShareListButtonProps) {
       }, 2000)
     } catch (error) {
       console.error('Failed to copy URL:', error)
-      toast.error(t('lists.share.error') as string)
+      toast.error(t('lists.share.error'))
     }
   }
 
@@ -52,7 +52,7 @@ export function ShareListButton({ listId, className }: ShareListButtonProps) {
             size="icon"
             className={className}
             onClick={handleCopyLink}
-            aria-label={t('lists.share.label') as string}
+            aria-label={t('lists.share.label')}
           >
             {copied ? (
               <Check className="h-4 w-4" />
@@ -62,7 +62,7 @@ export function ShareListButton({ listId, className }: ShareListButtonProps) {
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{t('lists.share.tooltip') as string}</p>
+          <p>{t('lists.share.tooltip')}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

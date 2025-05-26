@@ -1,27 +1,34 @@
+/* eslint-disable no-shadow */
 import { Calendar, CheckCircle, ChevronRight, GripVertical } from 'lucide-react'
 import { format } from 'date-fns'
-import type { Task } from '@/lib/types'
-import { cn, getPriorityClasses, isToday, isTomorrow, isPastDueDate } from '@/lib/utils'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Button } from '@/components/ui/button'
 import {
   DndContext,
-  closestCenter,
   KeyboardSensor,
+  MeasuringStrategy,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors,
-  MeasuringStrategy,
 } from '@dnd-kit/core'
-import type { DragEndEvent } from '@dnd-kit/core'
 import {
-  arrayMove,
   SortableContext,
+  arrayMove,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import type { Task } from '@/lib/types'
+import type { DragEndEvent } from '@dnd-kit/core'
+import {
+  cn,
+  getPriorityClasses,
+  isPastDueDate,
+  isToday,
+  isTomorrow,
+} from '@/lib/utils'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
 
 interface TaskListProps {
   tasks: Array<Task>
@@ -40,7 +47,10 @@ interface SortableTaskItemProps {
   listClasses?: string
   onSelectTask: (task: Task) => void
   onToggleCompletion: (task: Task) => void
-  handleDefaultClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, task: Task) => void
+  handleDefaultClick: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    task: Task,
+  ) => void
   formatDueDate: (dateString: string) => { month: string; day: string }
   isToday: (dateString: string) => boolean
   isTomorrow: (dateString: string) => boolean
@@ -67,7 +77,7 @@ function SortableTaskItem({
     transition,
     isDragging,
   } = useSortable({ id: task.id })
-  
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -88,13 +98,10 @@ function SortableTaskItem({
       onClick={(e) => handleDefaultClick(e, task)}
       {...attributes}
     >
-      <div 
-        className="mr-2 cursor-grab touch-none"
-        {...listeners}
-      >
+      <div className="mr-2 cursor-grab touch-none" {...listeners}>
         <GripVertical className="h-5 w-5 text-gray-400" />
       </div>
-      
+
       <Checkbox
         className="w-5 h-5 rounded-4xl mr-4"
         checked={task.isCompleted}
@@ -217,31 +224,31 @@ export function TaskList({
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   )
 
   // Handle drag end event
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
-    
+
     if (!over || active.id === over.id) {
       return
     }
-    
+
     // Find the indices of the dragged item and the target position
     const oldIndex = tasks.findIndex((task) => task.id === active.id)
     const newIndex = tasks.findIndex((task) => task.id === over.id)
-    
+
     if (oldIndex !== -1 && newIndex !== -1) {
       // Reorder the tasks array
       const newTasks = arrayMove(tasks, oldIndex, newIndex)
-      
+
       // Update the position property for each task based on its new index
       const updatedTasks = newTasks.map((task, index) => ({
         ...task,
         position: index,
       }))
-      
+
       // Call the callback to update the tasks in the parent component
       if (onReorderTasks) {
         onReorderTasks(updatedTasks)
@@ -262,7 +269,7 @@ export function TaskList({
               autoScroll={true}
             >
               <SortableContext
-                items={tasks.map(task => task.id)}
+                items={tasks.map((task) => task.id)}
                 strategy={verticalListSortingStrategy}
               >
                 {tasks.map((task) => (

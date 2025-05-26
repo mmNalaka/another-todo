@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Loader2, Trash2 } from 'lucide-react'
+import type { Task } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
@@ -13,7 +14,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { useLocalization } from '@/hooks/use-localization'
 import { useDeleteTask } from '@/hooks/tasks/use-delete-task'
-import type { Task } from '@/lib/types'
 
 type TaskDeleteButtonProps = {
   task: Task

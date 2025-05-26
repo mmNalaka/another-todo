@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Loader2, Trash2 } from 'lucide-react'
+import type { List } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
@@ -13,7 +14,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { useLocalization } from '@/hooks/use-localization'
 import { useDeleteList } from '@/hooks/lists/use-delete-list'
-import type { List } from '@/lib/types'
 
 type ListDeleteButtonProps = {
   list: List

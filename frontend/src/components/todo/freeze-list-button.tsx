@@ -55,7 +55,7 @@ export function FreezeListButton({
             className={className}
             onClick={handleToggleFrozen}
             disabled={isUpdating}
-            aria-label={isFrozen ? (t('lists.unfreeze.label') as string) : (t('lists.freeze.label') as string)}
+            aria-label={isFrozen ? (t('lists.unfreeze.label')) : (t('lists.freeze.label'))}
           >
             {isFrozen ? (
               <UnlockIcon className="h-4 w-4" />
@@ -67,8 +67,8 @@ export function FreezeListButton({
         <TooltipContent>
           <p>
             {isFrozen 
-              ? (t('lists.unfreeze.tooltip') as string)
-              : (t('lists.freeze.tooltip') as string)}
+              ? (t('lists.unfreeze.tooltip'))
+              : (t('lists.freeze.tooltip'))}
           </p>
         </TooltipContent>
       </Tooltip>
