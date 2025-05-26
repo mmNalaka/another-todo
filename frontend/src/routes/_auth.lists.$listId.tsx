@@ -146,7 +146,38 @@ function RouteComponent() {
 
     return (
       <div className="flex flex-col h-full overflow-hidden">
-        <div className="flex-none p-4 space-y-2">
+        <div className="flex-none p-4 space-y-4">
+          <div className="flex items-center justify-end gap-2 md:hidden order-first">
+            <ShareListDialog
+              listId={listData.id}
+              isOwner={isOwner}
+              collaborators={listData.collaborators}
+            />
+            {listData.isFrozen && (
+              <Badge variant="destructive">
+                {t('lists.frozen')}
+              </Badge>
+            )}
+            {isOwner && (
+              <>
+                <FreezeListButton
+                  isFrozen={listData.isFrozen}
+                  listId={listData.id}
+                  isOwner={isOwner}
+                />
+                <ListDeleteButton
+                  list={listData}
+                  variant="ghost"
+                  showIcon={true}
+                  onSuccess={() => navigate({ to: '/tasks' })}
+                />
+              </>
+            )}
+            <Badge variant="secondary" className="h-8">
+              {listData.tasks?.length || 0} {t('tasks.title')}
+            </Badge>
+          </div>
+          
           <div className="flex items-center justify-between">
             <div className="flex-1 flex items-center">
               <Input
@@ -156,7 +187,8 @@ function RouteComponent() {
                 readOnly={listData.isFrozen && !isOwner}
               />
             </div>
-            <div className="flex items-center gap-2">
+            
+            <div className="hidden md:flex items-center gap-2">
               <ShareListDialog
                 listId={listData.id}
                 isOwner={isOwner}
