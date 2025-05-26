@@ -37,7 +37,7 @@
 ### Offline & Persistence
 
 - [ ] As a user, I can keep editing the list even when I lose internet connection, and can expect it to sync up with the backend as I regain connection.
-- [ ] As a user, I can be sure that my todos will be persisted so that important information is not lost when the server restarts.
+- [x] As a user, I can be sure that my todos will be persisted so that important information is not lost when the server restarts.
 
 ### Advanced Features
 
