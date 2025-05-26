@@ -7,6 +7,11 @@
 - [x] As a user, I can create to-do items, such as a grocery list.
 - [x] As a user, I can mark to-do items as "done" so that I can avoid clutter and focus on things that are still pending.
 - [x] As a user, I can filter the to-do list and view items that were marked as done so that I can retrospect on my prior progress.
+- [x] As a user, I can set the priority of a to-do item so that I can prioritize my tasks.
+- [x] As a user, I can set a due date for a to-do item so that I can plan my tasks.
+- [x] As a user, I can edit a to-do item so that I can correct my mistakes.
+- [x] As a user, I can delete a to-do item so that I can remove tasks that are no longer relevant.
+
 
 ### Task Organization
 
