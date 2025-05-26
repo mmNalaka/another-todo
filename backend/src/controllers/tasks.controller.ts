@@ -233,36 +233,55 @@ export const reorderTasksHandler = factory.createHandlers(
     const userInfo = c.get('user' as any) as AuthenticatedUser
     const { listId, tasks } = c.req.valid('json')
     
-    // Get the list to check permissions
-    const list = await getListById(listId)
-    if (!list) {
-      return createErrorResponse(c, 'NOT_FOUND', 'List not found')
-    }
+    // Special case for all-tasks view (listId is null or 'all-tasks')
+    const isAllTasksView = !listId || listId === 'all-tasks'
     
-    // Check if user is the owner or has editor permissions
-    const isOwner = userInfo.id === list.ownerId
-    
-    // Only the owner can modify a frozen list
-    if (!isOwner && list.isFrozen) {
-      return createErrorResponse(c, 'FORBIDDEN', 'List is frozen and cannot be modified')
-    }
-    
-    // Only the owner can modify a non-shared list
-    if (!isOwner && !list.isShared) {
-      return createErrorResponse(c, 'FORBIDDEN', 'No permission to modify this list')
-    }
-    
-    // If not the owner, check if user is a collaborator with editor role
-    if (!isOwner) {
-      const collaborators = await getListCollaborators(list.id)
-      const userCollaborator = collaborators.find(
-        (collaborator) => collaborator.userId === userInfo.id
-      )
+    if (!isAllTasksView) {
+      // Get the list to check permissions
+      const list = await getListById(listId)
+      if (!list) {
+        return createErrorResponse(c, 'NOT_FOUND', 'List not found')
+      }
       
-      const hasEditorPermission = userCollaborator?.role === 'editor'
+      // Check if user is the owner or has editor permissions
+      const isOwner = userInfo.id === list.ownerId
       
-      if (!hasEditorPermission) {
-        return createErrorResponse(c, 'FORBIDDEN', 'No permission to modify tasks in this list')
+      // Only the owner can modify a frozen list
+      if (!isOwner && list.isFrozen) {
+        return createErrorResponse(c, 'FORBIDDEN', 'List is frozen and cannot be modified')
+      }
+      
+      // Only the owner can modify a non-shared list
+      if (!isOwner && !list.isShared) {
+        return createErrorResponse(c, 'FORBIDDEN', 'No permission to modify this list')
+      }
+      
+      // If not the owner, check if user is a collaborator with editor role
+      if (!isOwner) {
+        const collaborators = await getListCollaborators(list.id)
+        const userCollaborator = collaborators.find(
+          (collaborator) => collaborator.userId === userInfo.id
+        )
+        
+        const hasEditorPermission = userCollaborator?.role === 'editor'
+        
+        if (!hasEditorPermission) {
+          return createErrorResponse(c, 'FORBIDDEN', 'No permission to modify tasks in this list')
+        }
+      }
+    } else {
+      // For all-tasks view, verify that all tasks belong to the current user
+      // This is a security measure to prevent users from modifying tasks they don't own
+      for (const taskPosition of tasks) {
+        const task = await getTaskById(taskPosition.id)
+        if (!task) {
+          return createErrorResponse(c, 'NOT_FOUND', `Task ${taskPosition.id} not found`)
+        }
+        
+        // Check if the user owns this task
+        if (task.userId !== userInfo.id) {
+          return createErrorResponse(c, 'FORBIDDEN', 'No permission to modify this task')
+        }
       }
     }
     

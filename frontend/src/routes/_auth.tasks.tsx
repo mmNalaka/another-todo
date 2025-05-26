@@ -10,6 +10,7 @@ import { useFetchTasks } from '@/hooks/tasks/use-fetch-tasks'
 import { TaskList } from '@/components/tasks/task-list'
 import { useLocalization } from '@/hooks/use-localization'
 import { useUpdateTask } from '@/hooks/tasks/use-update-task'
+import { useUpdateTaskPositions } from '@/hooks/tasks/use-update-task-positions'
 import { useDebouncedSave } from '@/hooks/use-debounced-save'
 
 export const Route = createFileRoute('/_auth/tasks')({
@@ -24,6 +25,7 @@ function RouteComponent() {
 
   const { tasks, isLoading } = useFetchTasks()
   const { updateTask } = useUpdateTask()
+  const { updateTaskPositions } = useUpdateTaskPositions()
   
   // Use the debounced save hook for task updates
   const { debouncedSave } = useDebouncedSave<{ id: string } & Partial<Task>>(
@@ -80,6 +82,20 @@ function RouteComponent() {
     debouncedSave({ id: task.id, isCompleted: !task.isCompleted })
   }
 
+  const handleReorderTasks = (reorderedTasks: Array<Task>) => {
+    // Extract just the id and position for the API call
+    const taskPositions = reorderedTasks.map((task) => ({
+      id: task.id,
+      position: task.position,
+    }))
+
+    // Use null as listId since these are tasks not associated with a specific list
+    updateTaskPositions({
+      listId: 'all-tasks', // Use a special identifier for the all tasks view
+      tasks: taskPositions,
+    })
+  }
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="flex flex-row flex-1 overflow-hidden">
@@ -102,6 +118,7 @@ function RouteComponent() {
               onSelectTask={handleSelectTask}
               selectedTask={selectedTaskId}
               onToggleCompletion={handleToggleCompletion}
+              onReorderTasks={handleReorderTasks}
             />
           </div>
         </div>

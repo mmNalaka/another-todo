@@ -1,4 +1,4 @@
-import { and, eq, isNull } from 'drizzle-orm'
+import { and, asc, desc, eq, isNull } from 'drizzle-orm'
 
 import type { NewTask } from '@/db/schemas/tasks.schema'
 
@@ -23,7 +23,7 @@ export async function getAllUserTasks(
     )
     .limit(limit || 20)
     .offset(offset || 0)
-    .orderBy(tasksTable.createdAt)
+    .orderBy(asc(tasksTable.position), desc(tasksTable.createdAt))
 }
 
 export async function getTaskById(taskId: string) {

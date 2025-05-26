@@ -25,7 +25,9 @@ interface UpdateTaskPositionsOptions {
 
 // Define the context type for optimistic updates
 type MutationContext = {
-  previousList: unknown
+  previousList?: unknown
+  previousTasks?: unknown
+  isAllTasksView: boolean
 }
 
 export function useUpdateTaskPositions<TData = Array<Task>>(
@@ -51,27 +53,29 @@ export function useUpdateTaskPositions<TData = Array<Task>>(
       },
       // Use optimistic updates to prevent UI jitter
       onMutate: async (variables) => {
-        // Cancel any outgoing refetches
-        await queryClient.cancelQueries({ queryKey: ['lists', variables.listId] })
+        const isAllTasksView = variables.listId === 'all-tasks'
         
-        // Snapshot the previous value
-        const previousList = queryClient.getQueryData(['lists', variables.listId])
-        
-        // Optimistically update the list with the new task positions
-        queryClient.setQueryData(['lists', variables.listId], (old: any) => {
-          if (!old || !old.data || !old.data.tasks) return old
+        if (isAllTasksView) {
+          // For all-tasks view
+          // Cancel any outgoing refetches
+          await queryClient.cancelQueries({ queryKey: ['tasks'] })
           
-          // Create a map of task IDs to their new positions
-          const positionMap = new Map(
-            variables.tasks.map(task => [task.id, task.position])
-          )
+          // Snapshot the previous value
+          const previousTasks = queryClient.getQueryData(['tasks'])
           
-          // Create a copy of the list with updated task positions
-          return {
-            ...old,
-            data: {
-              ...old.data,
-              tasks: old.data.tasks.map((task: any) => {
+          // Optimistically update the tasks with the new positions
+          queryClient.setQueryData(['tasks'], (old: any) => {
+            if (!old || !old.data) return old
+            
+            // Create a map of task IDs to their new positions
+            const positionMap = new Map(
+              variables.tasks.map(task => [task.id, task.position])
+            )
+            
+            // Create a copy of the tasks with updated positions
+            return {
+              ...old,
+              data: old.data.map((task: any) => {
                 // If this task's position was updated, use the new position
                 if (positionMap.has(task.id)) {
                   return {
@@ -82,13 +86,51 @@ export function useUpdateTaskPositions<TData = Array<Task>>(
                 return task
               }).sort((a: any, b: any) => a.position - b.position)
             }
-          }
-        })
-        
-        // Return the snapshot so we can rollback if needed
-        return { previousList }
+          })
+          
+          // Return the snapshot so we can rollback if needed
+          return { previousTasks, isAllTasksView }
+        } else {
+          // For list-specific view
+          // Cancel any outgoing refetches
+          await queryClient.cancelQueries({ queryKey: ['lists', variables.listId] })
+          
+          // Snapshot the previous value
+          const previousList = queryClient.getQueryData(['lists', variables.listId])
+          
+          // Optimistically update the list with the new task positions
+          queryClient.setQueryData(['lists', variables.listId], (old: any) => {
+            if (!old || !old.data || !old.data.tasks) return old
+            
+            // Create a map of task IDs to their new positions
+            const positionMap = new Map(
+              variables.tasks.map(task => [task.id, task.position])
+            )
+            
+            // Create a copy of the list with updated task positions
+            return {
+              ...old,
+              data: {
+                ...old.data,
+                tasks: old.data.tasks.map((task: any) => {
+                  // If this task's position was updated, use the new position
+                  if (positionMap.has(task.id)) {
+                    return {
+                      ...task,
+                      position: positionMap.get(task.id)
+                    }
+                  }
+                  return task
+                }).sort((a: any, b: any) => a.position - b.position)
+              }
+            }
+          })
+          
+          // Return the snapshot so we can rollback if needed
+          return { previousList, isAllTasksView: false }
+        }
       },
-      onSuccess: (data, variables) => {
+      onSuccess: (data) => {
         if (showToasts) {
           toast.success('Task order updated successfully')
         }
@@ -98,9 +140,13 @@ export function useUpdateTaskPositions<TData = Array<Task>>(
         }
       },
       onError: (err, variables, context: MutationContext | undefined) => {
-        // If we have the previous data, roll back to it
-        if (context?.previousList) {
-          queryClient.setQueryData(['lists', variables.listId], context.previousList)
+        // If we have the previous data, roll back to it based on view type
+        if (context) {
+          if (context.isAllTasksView && context.previousTasks) {
+            queryClient.setQueryData(['tasks'], context.previousTasks)
+          } else if (!context.isAllTasksView && context.previousList) {
+            queryClient.setQueryData(['lists', variables.listId], context.previousList)
+          }
         }
         
         console.error('Task position update error:', err)
@@ -116,7 +162,13 @@ export function useUpdateTaskPositions<TData = Array<Task>>(
       // Always refetch after error or success to ensure data consistency
       onSettled: (_data, _error, variables) => {
         if (invalidateQueries) {
-          queryClient.invalidateQueries({ queryKey: ['lists', variables.listId] })
+          const isAllTasksView = variables.listId === 'all-tasks'
+          
+          if (isAllTasksView) {
+            queryClient.invalidateQueries({ queryKey: ['tasks'] })
+          } else {
+            queryClient.invalidateQueries({ queryKey: ['lists', variables.listId] })
+          }
         }
       },
       ...mutationOptions,

@@ -34,6 +34,6 @@ export const taskPositionSchema = z.object({
 })
 
 export const reorderTasksBodySchema = z.object({
-  listId: z.string(),
+  listId: z.string().optional().nullable().default(null),
   tasks: z.array(taskPositionSchema),
 })
