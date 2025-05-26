@@ -18,33 +18,39 @@ import { useDeleteList } from '@/hooks/lists/use-delete-list'
 type ListDeleteButtonProps = {
   list: List
   onSuccess?: () => void
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
+  variant?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link'
   showIcon?: boolean
 }
 
-export function ListDeleteButton({ 
-  list, 
-  onSuccess, 
+export function ListDeleteButton({
+  list,
+  onSuccess,
   variant = 'destructive',
-  showIcon = true 
+  showIcon = true,
 }: ListDeleteButtonProps) {
   const { t } = useLocalization()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  
+
   const { deleteList, isPending: isDeleting } = useDeleteList({
     onSuccess: () => {
       if (onSuccess) {
         onSuccess()
       }
-    }
+    },
   })
 
   return (
     <>
-      <Button 
-        variant={'destructive'}
-        size="sm" 
-        onClick={() => setShowDeleteConfirm(true)} 
+      <Button
+        variant={variant}
+        size="sm"
+        onClick={() => setShowDeleteConfirm(true)}
         disabled={isDeleting}
       >
         {isDeleting ? (
@@ -54,19 +60,23 @@ export function ListDeleteButton({
         ) : null}
         {t('lists.delete')}
       </Button>
-      
+
       {/* Delete confirmation dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('lists.delete.confirm.title')}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t('lists.delete.confirm.title')}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {t('lists.delete.confirm.description', { title: list.title })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('lists.delete.confirm.cancel')}</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogCancel>
+              {t('lists.delete.confirm.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
               onClick={() => deleteList({ id: list.id })}
               className="bg-red-500 hover:bg-red-600"
             >

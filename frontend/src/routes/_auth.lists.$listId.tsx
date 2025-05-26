@@ -169,9 +169,7 @@ function RouteComponent() {
               collaborators={listData.collaborators}
             />
             {listData.isFrozen && (
-              <Badge variant="destructive">
-                {t('lists.frozen')}
-              </Badge>
+              <Badge variant="destructive">{t('lists.frozen')}</Badge>
             )}
             {isOwner && (
               <>
@@ -192,7 +190,7 @@ function RouteComponent() {
               {listData.tasks?.length || 0} {t('tasks.title')}
             </Badge>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex-1 flex items-center">
               <Input
@@ -202,7 +200,7 @@ function RouteComponent() {
                 readOnly={listData.isFrozen && !isOwner}
               />
             </div>
-            
+
             <div className="hidden md:flex items-center gap-2">
               <ShareListDialog
                 listId={listData.id}
@@ -223,7 +221,6 @@ function RouteComponent() {
                   />
                   <ListDeleteButton
                     list={listData}
-                    variant="ghost"
                     showIcon={true}
                     onSuccess={() => navigate({ to: '/tasks' })}
                   />
