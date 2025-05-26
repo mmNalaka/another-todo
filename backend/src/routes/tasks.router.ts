@@ -5,8 +5,8 @@ import {
   deleteTaskHandler,
   getAllTasksHandler,
   getTaskByIdHandler,
-  updateTaskHandler,
   reorderTasksHandler,
+  updateTaskHandler,
 } from '@/controllers/tasks.controller'
 import { authenticatedMiddleware } from '@/middlewares/authenticated.mw'
 

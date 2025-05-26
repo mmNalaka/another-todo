@@ -13,6 +13,7 @@ import {
 } from '@/db/repositories/lists.repo'
 import { createErrorResponse } from '@/utils/error.utils'
 import { factory } from '@/utils/hono.utils'
+import { generateListId } from '@/utils/id'
 import {
   calculatePagination,
   createPaginatedResponse,
@@ -25,7 +26,6 @@ import {
   toggleListFrozenSchema,
   updateListBodySchema,
 } from '@/validations/lists.validations'
-import { generateListId } from '@/utils/id'
 
 // GET /api/lists - Get all tasks_lists for a user
 export const getAllListHandler = factory.createHandlers(
@@ -88,9 +88,7 @@ export const getListByIdHandler = factory.createHandlers(
 
     // Check if user is a collaborator when list is shared
     if (!isOwner && isShared) {
-      const isCollaborator = collaborators.some(
-        (c) => c.userId === userInfo.id,
-      )
+      const isCollaborator = collaborators.some((c) => c.userId === userInfo.id)
       if (!isCollaborator) {
         return createErrorResponse(c, 'FORBIDDEN')
       }
@@ -123,20 +121,20 @@ export const updateListHandler = factory.createHandlers(
 
     const { ownerId, isShared } = existingList
     const isOwner = ownerId === userInfo.id
-    
+
     // If user is not the owner, check if they are a collaborator with editor role
     if (!isOwner) {
       // If the list is not shared, return forbidden
       if (!isShared) {
         return createErrorResponse(c, 'FORBIDDEN')
       }
-      
+
       // Get collaborators and check if user is an editor
       const collaborators = await getListCollaborators(id)
       const userCollaborator = collaborators.find(
-        (c) => c.userId === userInfo.id
+        (c) => c.userId === userInfo.id,
       )
-      
+
       // If user is not a collaborator or doesn't have editor role, return forbidden
       if (!userCollaborator || userCollaborator.role !== 'editor') {
         return createErrorResponse(c, 'FORBIDDEN')

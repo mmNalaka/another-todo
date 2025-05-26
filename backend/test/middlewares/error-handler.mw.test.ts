@@ -1,11 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { errorHandler } from '../../src/middlewares/error-handler.mw'
+/* eslint-disable antfu/if-newline */
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ZodError } from 'zod'
-import { z } from 'zod'
-import * as errorUtils from '../../src/utils/error.utils'
+
+import { errorHandler } from '@/middlewares/error-handler.mw'
+import * as errorUtils from '@/utils/error.utils'
 
 // Mock the error utils module
-vi.mock('../../src/utils/error.utils', () => ({
+vi.mock('@/utils/error.utils', () => ({
   createErrorResponse: vi.fn().mockReturnValue('error-response'),
   errorCodes: {
     VALIDATION_ERROR: { status: 400, message: 'Validation error' },
@@ -22,7 +23,7 @@ vi.mock('../../src/config/env.config', () => ({
   },
 }))
 
-describe('Error Handler Middleware', () => {
+describe('error Handler Middleware', () => {
   let mockContext: any
   let mockNext: any
   let middleware: any
@@ -30,7 +31,7 @@ describe('Error Handler Middleware', () => {
   beforeEach(() => {
     // Reset mocks
     vi.clearAllMocks()
-    
+
     // Create a mock context with logger
     mockContext = {
       req: {
@@ -43,10 +44,10 @@ describe('Error Handler Middleware', () => {
         return undefined
       }),
     }
-    
+
     // Create a mock next function
     mockNext = vi.fn()
-    
+
     // Create the middleware
     middleware = errorHandler()
   })
@@ -54,10 +55,10 @@ describe('Error Handler Middleware', () => {
   it('should call next() when no error occurs', async () => {
     // Call the middleware
     await middleware(mockContext, mockNext)
-    
+
     // Verify next was called
     expect(mockNext).toHaveBeenCalled()
-    
+
     // Verify createErrorResponse was not called
     expect(errorUtils.createErrorResponse).not.toHaveBeenCalled()
   })
@@ -72,20 +73,20 @@ describe('Error Handler Middleware', () => {
         validation: 'email',
       },
     ])
-    
+
     // Manually add a stack property
     Object.defineProperty(zodError, 'stack', {
       value: 'ZodError stack trace',
       configurable: true,
       writable: true,
     })
-    
+
     // Make next throw the ZodError
     mockNext.mockRejectedValue(zodError)
-    
+
     // Call the middleware
     const response = await middleware(mockContext, mockNext)
-    
+
     // Verify createErrorResponse was called with correct arguments
     expect(errorUtils.createErrorResponse).toHaveBeenCalledWith(
       mockContext,
@@ -94,9 +95,9 @@ describe('Error Handler Middleware', () => {
       400,
       {
         issues: zodError.issues,
-      }
+      },
     )
-    
+
     // Verify the response
     expect(response).toBe('error-response')
   })
@@ -108,20 +109,20 @@ describe('Error Handler Middleware', () => {
     Object.defineProperty(error, 'code', { value: 'NOT_FOUND' })
     // Add stack property to avoid undefined error
     error.stack = 'Error stack trace'
-    
+
     // Make next throw the error
     mockNext.mockRejectedValue(error)
-    
+
     // Call the middleware
     const response = await middleware(mockContext, mockNext)
-    
+
     // Verify createErrorResponse was called with correct arguments
     expect(errorUtils.createErrorResponse).toHaveBeenCalledWith(
       mockContext,
       'NOT_FOUND',
-      'Not found error'
+      'Not found error',
     )
-    
+
     // Verify the response
     expect(response).toBe('error-response')
   })
@@ -131,19 +132,19 @@ describe('Error Handler Middleware', () => {
     const error = new Error('User is unauthorized')
     // Add stack property to avoid undefined error
     error.stack = 'Error stack trace'
-    
+
     // Make next throw the error
     mockNext.mockRejectedValue(error)
-    
+
     // Call the middleware
     const response = await middleware(mockContext, mockNext)
-    
+
     // Verify createErrorResponse was called with correct arguments
     expect(errorUtils.createErrorResponse).toHaveBeenCalledWith(
       mockContext,
-      'UNAUTHORIZED'
+      'UNAUTHORIZED',
     )
-    
+
     // Verify the response
     expect(response).toBe('error-response')
   })
@@ -153,19 +154,19 @@ describe('Error Handler Middleware', () => {
     const error = new Error('Resource not found')
     // Add stack property to avoid undefined error
     error.stack = 'Error stack trace'
-    
+
     // Make next throw the error
     mockNext.mockRejectedValue(error)
-    
+
     // Call the middleware
     const response = await middleware(mockContext, mockNext)
-    
+
     // Verify createErrorResponse was called with correct arguments
     expect(errorUtils.createErrorResponse).toHaveBeenCalledWith(
       mockContext,
-      'NOT_FOUND'
+      'NOT_FOUND',
     )
-    
+
     // Verify the response
     expect(response).toBe('error-response')
   })
@@ -175,20 +176,20 @@ describe('Error Handler Middleware', () => {
     const error = new Error('Unknown error')
     // Add stack property to avoid undefined error
     error.stack = 'Error stack trace'
-    
+
     // Make next throw the error
     mockNext.mockRejectedValue(error)
-    
+
     // Call the middleware
     const response = await middleware(mockContext, mockNext)
-    
+
     // Verify createErrorResponse was called with correct arguments
     expect(errorUtils.createErrorResponse).toHaveBeenCalledWith(
       mockContext,
       'INTERNAL_SERVER_ERROR',
-      'Unknown error'
+      'Unknown error',
     )
-    
+
     // Verify the response
     expect(response).toBe('error-response')
   })
@@ -201,17 +202,17 @@ describe('Error Handler Middleware', () => {
       if (key === 'requestId') return 'test-request-id'
       return undefined
     })
-    
+
     // Create an error
     const error = new Error('Test error')
     error.stack = 'Error stack trace'
-    
+
     // Make next throw the error
     mockNext.mockRejectedValue(error)
-    
+
     // Call the middleware
     await middleware(mockContext, mockNext)
-    
+
     // Verify logger.error was called with correct arguments
     expect(mockLogger.error).toHaveBeenCalledWith({
       err: error,
@@ -229,22 +230,22 @@ describe('Error Handler Middleware', () => {
       if (key === 'requestId') return 'test-request-id'
       return undefined
     })
-    
+
     // Mock console.error
     const originalConsoleError = console.error
     console.error = vi.fn()
-    
+
     try {
       // Create an error
       const error = new Error('Test error')
       error.stack = 'Error stack trace'
-      
+
       // Make next throw the error
       mockNext.mockRejectedValue(error)
-      
+
       // Call the middleware
       await middleware(mockContext, mockNext)
-      
+
       // Verify console.error was called
       expect(console.error).toHaveBeenCalled()
     } finally {

@@ -1,6 +1,11 @@
 import { Hono } from 'hono'
 
 import {
+  addCollaboratorHandler,
+  removeCollaboratorHandler,
+  updateCollaboratorRoleHandler,
+} from '@/controllers/collaborators.controller'
+import {
   createListHandler,
   deleteListHandler,
   getAllListHandler,
@@ -8,11 +13,6 @@ import {
   toggleListFrozenHandler,
   updateListHandler,
 } from '@/controllers/lists.controller'
-import {
-  addCollaboratorHandler,
-  removeCollaboratorHandler,
-  updateCollaboratorRoleHandler,
-} from '@/controllers/collaborators.controller'
 import { authenticatedMiddleware } from '@/middlewares/authenticated.mw'
 
 // /api/lists router

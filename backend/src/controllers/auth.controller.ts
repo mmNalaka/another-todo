@@ -12,12 +12,12 @@ import { authenticatedMiddleware } from '@/middlewares/authenticated.mw'
 import { tokenService } from '@/services/token.service'
 import { createErrorResponse } from '@/utils/error.utils'
 import { factory } from '@/utils/hono.utils'
+import { generateUserId } from '@/utils/id'
 import {
   refreshTokenBodySchema,
   signInBodySchema,
   signUpBodySchema,
 } from '@/validations/auth.validations'
-import { generateUserId } from '@/utils/id'
 
 // GET /signup - Signup using email and password
 export const authSignupHandler = factory.createHandlers(

@@ -27,8 +27,8 @@ export async function getCollaborator(listId: string, userId: string) {
     .where(
       and(
         eq(listCollaborators.listId, listId),
-        eq(listCollaborators.userId, userId)
-      )
+        eq(listCollaborators.userId, userId),
+      ),
     )
     .limit(1)
     .then((res) => res[0])
@@ -40,7 +40,7 @@ export async function getCollaborator(listId: string, userId: string) {
 export async function updateCollaboratorRole(
   listId: string,
   userId: string,
-  role: string
+  role: string,
 ) {
   return await db
     .update(listCollaborators)
@@ -48,8 +48,8 @@ export async function updateCollaboratorRole(
     .where(
       and(
         eq(listCollaborators.listId, listId),
-        eq(listCollaborators.userId, userId)
-      )
+        eq(listCollaborators.userId, userId),
+      ),
     )
     .returning()
     .then((res) => res[0])
@@ -64,8 +64,8 @@ export async function removeCollaborator(listId: string, userId: string) {
     .where(
       and(
         eq(listCollaborators.listId, listId),
-        eq(listCollaborators.userId, userId)
-      )
+        eq(listCollaborators.userId, userId),
+      ),
     )
     .returning()
     .then((res) => res[0])

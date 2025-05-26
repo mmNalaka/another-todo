@@ -1,4 +1,5 @@
-import { and, asc, desc, eq, isNull, gte, lt } from 'drizzle-orm'
+/* eslint-disable style/member-delimiter-style */
+import { and, asc, desc, eq, gte, isNull, lt } from 'drizzle-orm'
 
 import type { NewTask } from '@/db/schemas/tasks.schema'
 
@@ -11,40 +12,36 @@ export async function getAllUserTasks(
   limit?: number,
   offset?: number,
   filter?: {
-    completed?: boolean;
-    dueDate?: 'today' | 'all';
+    completed?: boolean
+    dueDate?: 'today' | 'all'
   },
 ) {
   // Build the where conditions
-  let conditions = [
+  const conditions = [
     eq(tasksTable.userId, userId),
     isNull(tasksTable.parentTaskId),
     isNull(tasksTable.listId),
-  ];
+  ]
 
   if (filter?.completed !== undefined) {
-    conditions.push(eq(tasksTable.isCompleted, filter.completed));
+    conditions.push(eq(tasksTable.isCompleted, filter.completed))
   }
 
   if (filter?.dueDate === 'today') {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
     // Get tasks due today (dueDate >= start of today AND dueDate < start of tomorrow)
     // Only add this condition if there are tasks with due dates
-    conditions.push(
-      gte(tasksTable.dueDate, today)
-    );
-    conditions.push(
-      lt(tasksTable.dueDate, tomorrow)
-    );
+    conditions.push(gte(tasksTable.dueDate, today))
+    conditions.push(lt(tasksTable.dueDate, tomorrow))
   }
 
   // Filter out any undefined conditions
-  const validConditions = conditions.filter(Boolean);
-  
+  const validConditions = conditions.filter(Boolean)
+
   return await db
     .select()
     .from(tasksTable)
@@ -125,7 +122,7 @@ export async function updateTaskPositions(
     // Use a transaction to ensure all updates succeed or fail together
     const updatedTasks = await db.transaction(async (tx) => {
       const results: NewTask[] = []
-      
+
       // Update each task's position
       for (const task of tasks) {
         const [updatedTask] = await tx
@@ -136,15 +133,15 @@ export async function updateTaskPositions(
           })
           .where(eq(tasksTable.id, task.id))
           .returning()
-        
+
         if (updatedTask) {
           results.push(updatedTask)
         }
       }
-      
+
       return results
     })
-    
+
     return updatedTasks
   } catch (error) {
     console.error('Error updating task positions:', error)

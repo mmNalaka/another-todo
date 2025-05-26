@@ -1,6 +1,6 @@
-import { afterAll, beforeAll, beforeEach, afterEach, vi } from 'vitest'
 import dotenv from 'dotenv'
 import { expand } from 'dotenv-expand'
+import { afterAll, afterEach, beforeAll, beforeEach, vi } from 'vitest'
 
 // Load environment variables for tests
 const env = dotenv.config({ path: '.env.test' })
@@ -53,12 +53,10 @@ vi.mock('../src/db', () => ({
 
 beforeAll(() => {
   // Setup code before all tests run
-  console.log('Setting up tests...')
 })
 
 afterAll(() => {
   // Cleanup code after all tests complete
-  console.log('Cleaning up after tests...')
 })
 
 beforeEach(() => {

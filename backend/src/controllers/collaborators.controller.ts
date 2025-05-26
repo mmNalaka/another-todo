@@ -2,10 +2,6 @@ import { zValidator } from '@hono/zod-validator'
 
 import type { AuthenticatedUser } from '@/middlewares/authenticated.mw'
 
-import { factory } from '@/utils/hono.utils'
-import { createErrorResponse } from '@/utils/error.utils'
-import { createSuccessResponse } from '@/utils/response.utils'
-import { getListById } from '@/db/repositories/lists.repo'
 import {
   addCollaborator,
   findUserByEmail,
@@ -13,12 +9,16 @@ import {
   removeCollaborator,
   updateCollaboratorRole,
 } from '@/db/repositories/collaborators.repo'
-import { getListParamsSchema } from '@/validations/lists.validations'
+import { getListById, updateList } from '@/db/repositories/lists.repo'
+// Import the updateList function from lists.repo.ts
+import { createErrorResponse } from '@/utils/error.utils'
+import { factory } from '@/utils/hono.utils'
+import { createSuccessResponse } from '@/utils/response.utils'
 import {
   addCollaboratorSchema,
-  removeCollaboratorSchema,
   updateCollaboratorRoleSchema,
 } from '@/validations/collaborators.validations'
+import { getListParamsSchema } from '@/validations/lists.validations'
 
 // POST /api/lists/:id/collaborators - Add a collaborator to a list
 export const addCollaboratorHandler = factory.createHandlers(
@@ -37,24 +37,40 @@ export const addCollaboratorHandler = factory.createHandlers(
 
     // Only the owner can add collaborators
     if (existingList.ownerId !== userInfo.id) {
-      return createErrorResponse(c, 'FORBIDDEN', 'Only the owner can add collaborators')
+      return createErrorResponse(
+        c,
+        'FORBIDDEN',
+        'Only the owner can add collaborators',
+      )
     }
 
     // Find the user by email
     const userToAdd = await findUserByEmail(email)
     if (!userToAdd) {
-      return createErrorResponse(c, 'NOT_FOUND', 'User not found with this email')
+      return createErrorResponse(
+        c,
+        'NOT_FOUND',
+        'User not found with this email',
+      )
     }
 
     // Don't allow adding the owner as a collaborator
     if (userToAdd.id === existingList.ownerId) {
-      return createErrorResponse(c, 'BAD_REQUEST', 'Cannot add the owner as a collaborator')
+      return createErrorResponse(
+        c,
+        'BAD_REQUEST',
+        'Cannot add the owner as a collaborator',
+      )
     }
 
     // Check if the user is already a collaborator
     const existingCollaborator = await getCollaborator(id, userToAdd.id)
     if (existingCollaborator) {
-      return createErrorResponse(c, 'BAD_REQUEST', 'User is already a collaborator')
+      return createErrorResponse(
+        c,
+        'BAD_REQUEST',
+        'User is already a collaborator',
+      )
     }
 
     // Add the collaborator
@@ -99,7 +115,11 @@ export const updateCollaboratorRoleHandler = factory.createHandlers(
 
     // Only the owner can update collaborator roles
     if (existingList.ownerId !== userInfo.id) {
-      return createErrorResponse(c, 'FORBIDDEN', 'Only the owner can update collaborator roles')
+      return createErrorResponse(
+        c,
+        'FORBIDDEN',
+        'Only the owner can update collaborator roles',
+      )
     }
 
     // Check if the collaborator exists
@@ -131,7 +151,11 @@ export const removeCollaboratorHandler = factory.createHandlers(
 
     // Only the owner can remove collaborators
     if (existingList.ownerId !== userInfo.id) {
-      return createErrorResponse(c, 'FORBIDDEN', 'Only the owner can remove collaborators')
+      return createErrorResponse(
+        c,
+        'FORBIDDEN',
+        'Only the owner can remove collaborators',
+      )
     }
 
     // Check if the collaborator exists
@@ -146,6 +170,3 @@ export const removeCollaboratorHandler = factory.createHandlers(
     return createSuccessResponse(c, removedCollaborator)
   },
 )
-
-// Import the updateList function from lists.repo.ts
-import { updateList } from '@/db/repositories/lists.repo'

@@ -17,13 +17,13 @@ async function startServer() {
     if (env.NODE_ENV === 'production') {
       await runMigrations()
     }
-    
+
     // Start the server
     serve({
       fetch: app.fetch,
       port,
     })
-    
+
     logger.info(`Server is running on port http://localhost:${port}`)
   } catch (error) {
     logger.error({ error }, 'Failed to start server')

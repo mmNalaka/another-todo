@@ -1,8 +1,10 @@
 import { zValidator } from '@hono/zod-validator'
-import { z } from 'zod'
 
+import type { Task, TasksList } from '@/db/schemas/tasks.schema'
 import type { AuthenticatedUser } from '@/middlewares/authenticated.mw'
+import type { ErrorCode } from '@/utils/error.utils'
 
+import { getListById, getListCollaborators } from '@/db/repositories/lists.repo'
 import {
   createTask,
   deleteTask,
@@ -11,29 +13,30 @@ import {
   updateTask,
   updateTaskPositions,
 } from '@/db/repositories/tasks.repo'
-import { createErrorResponse, ErrorCode } from '@/utils/error.utils'
+import { createErrorResponse } from '@/utils/error.utils'
 import { factory } from '@/utils/hono.utils'
 import {
   calculatePagination,
   createPaginatedResponse,
   createSuccessResponse,
 } from '@/utils/response.utils'
-import { genericPaginationSchema } from '@/validations/common.validations'
 import {
   createTaskBodySchema,
-  taskIdParamSchema,
-  updateTaskBodySchema,
   reorderTasksBodySchema,
   taskFilterSchema,
+  taskIdParamSchema,
+  updateTaskBodySchema,
 } from '@/validations/tasks.validations'
-import { getListById, getListCollaborators } from '@/db/repositories/lists.repo'
-import { Task, TasksList } from '@/db/schemas/tasks.schema'
 
 async function checkListTaskPermission(
   task: Task,
   userId: string,
   permission: 'editor' | 'viewer',
-): Promise<{ allowed: boolean; error: ErrorCode | null; list: TasksList | null }> {
+): Promise<{
+    allowed: boolean
+    error: ErrorCode | null
+    list: TasksList | null
+  }> {
   // Check if this is a task that belongs to a list
   const isListTask = task.listId !== null
 
@@ -57,9 +60,9 @@ async function checkListTaskPermission(
   )
 
   // If required permission is 'viewer', user must be a collaborator with 'viewer' role or 'editor' role
-  const hasRequiredPermission =
-    userAsCollaborator?.role === permission ||
-    userAsCollaborator?.role === 'editor'
+  const hasRequiredPermission
+    = userAsCollaborator?.role === permission
+      || userAsCollaborator?.role === 'editor'
 
   // User must be a collaborator with 'editor' role to modify tasks
   if (!userAsCollaborator || !hasRequiredPermission) {
@@ -71,8 +74,6 @@ async function checkListTaskPermission(
   // User has permission as a collaborator with editor role
   return { allowed: true, error: null, list }
 }
-
-
 
 // GET /api/tasks - Get all tasks for a user
 export const getAllTasksHandler = factory.createHandlers(
@@ -122,7 +123,11 @@ export const getTaskByIdHandler = factory.createHandlers(
       'viewer',
     )
     if (!isOwner && !allowed) {
-      return createErrorResponse(c, error || 'FORBIDDEN', 'No permission to view this task')
+      return createErrorResponse(
+        c,
+        error || 'FORBIDDEN',
+        'No permission to view this task',
+      )
     }
 
     return createSuccessResponse(c, task)
@@ -151,12 +156,20 @@ export const createTaskHandler = factory.createHandlers(
 
       // Only the owner can create tasks in a frozen list
       if (!isListOwner && list.isFrozen) {
-        return createErrorResponse(c, 'FORBIDDEN', 'List is frozen and cannot be modified')
+        return createErrorResponse(
+          c,
+          'FORBIDDEN',
+          'List is frozen and cannot be modified',
+        )
       }
 
       // Only the owner can create tasks in a non-shared list
       if (!isListOwner && !list.isShared) {
-        return createErrorResponse(c, 'FORBIDDEN', 'No permission to create task in this list')
+        return createErrorResponse(
+          c,
+          'FORBIDDEN',
+          'No permission to create task in this list',
+        )
       }
 
       const collaborators = await getListCollaborators(list.id)
@@ -167,7 +180,11 @@ export const createTaskHandler = factory.createHandlers(
       const hasEditorPermission = userCollaborator?.role === 'editor'
 
       if (!isListOwner && !hasEditorPermission) {
-        return createErrorResponse(c, 'FORBIDDEN', 'No permission to create task in this list')
+        return createErrorResponse(
+          c,
+          'FORBIDDEN',
+          'No permission to create task in this list',
+        )
       }
 
       // Set the actual owner id to the list owner id
@@ -242,41 +259,53 @@ export const reorderTasksHandler = factory.createHandlers(
   async (c) => {
     const userInfo = c.get('user' as any) as AuthenticatedUser
     const { listId, tasks } = c.req.valid('json')
-    
+
     // Special case for all-tasks view (listId is null or 'all-tasks')
     const isAllTasksView = !listId || listId === 'all-tasks'
-    
+
     if (!isAllTasksView) {
       // Get the list to check permissions
       const list = await getListById(listId)
       if (!list) {
         return createErrorResponse(c, 'NOT_FOUND', 'List not found')
       }
-      
+
       // Check if user is the owner or has editor permissions
       const isOwner = userInfo.id === list.ownerId
-      
+
       // Only the owner can modify a frozen list
       if (!isOwner && list.isFrozen) {
-        return createErrorResponse(c, 'FORBIDDEN', 'List is frozen and cannot be modified')
+        return createErrorResponse(
+          c,
+          'FORBIDDEN',
+          'List is frozen and cannot be modified',
+        )
       }
-      
+
       // Only the owner can modify a non-shared list
       if (!isOwner && !list.isShared) {
-        return createErrorResponse(c, 'FORBIDDEN', 'No permission to modify this list')
+        return createErrorResponse(
+          c,
+          'FORBIDDEN',
+          'No permission to modify this list',
+        )
       }
-      
+
       // If not the owner, check if user is a collaborator with editor role
       if (!isOwner) {
         const collaborators = await getListCollaborators(list.id)
         const userCollaborator = collaborators.find(
-          (collaborator) => collaborator.userId === userInfo.id
+          (collaborator) => collaborator.userId === userInfo.id,
         )
-        
+
         const hasEditorPermission = userCollaborator?.role === 'editor'
-        
+
         if (!hasEditorPermission) {
-          return createErrorResponse(c, 'FORBIDDEN', 'No permission to modify tasks in this list')
+          return createErrorResponse(
+            c,
+            'FORBIDDEN',
+            'No permission to modify tasks in this list',
+          )
         }
       }
     } else {
@@ -285,23 +314,35 @@ export const reorderTasksHandler = factory.createHandlers(
       for (const taskPosition of tasks) {
         const task = await getTaskById(taskPosition.id)
         if (!task) {
-          return createErrorResponse(c, 'NOT_FOUND', `Task ${taskPosition.id} not found`)
+          return createErrorResponse(
+            c,
+            'NOT_FOUND',
+            `Task ${taskPosition.id} not found`,
+          )
         }
-        
+
         // Check if the user owns this task
         if (task.userId !== userInfo.id) {
-          return createErrorResponse(c, 'FORBIDDEN', 'No permission to modify this task')
+          return createErrorResponse(
+            c,
+            'FORBIDDEN',
+            'No permission to modify this task',
+          )
         }
       }
     }
-    
+
     // Update the task positions
     const updatedTasks = await updateTaskPositions(tasks)
-    
+
     if (!updatedTasks) {
-      return createErrorResponse(c, 'INTERNAL_SERVER_ERROR', 'Failed to update task positions')
+      return createErrorResponse(
+        c,
+        'INTERNAL_SERVER_ERROR',
+        'Failed to update task positions',
+      )
     }
-    
+
     return createSuccessResponse(c, updatedTasks)
   },
 )
@@ -325,7 +366,7 @@ export const deleteTaskHandler = factory.createHandlers(
       userInfo.id,
       'editor',
     )
-    
+
     if (!isOwner && !allowed) {
       return createErrorResponse(c, error || 'FORBIDDEN')
     }

@@ -1,7 +1,12 @@
-import { describe, it, expect, vi } from 'vitest'
-import { createErrorResponse, errorCodes, type ErrorCode } from '../../src/utils/error.utils'
+import { describe, expect, it, vi } from 'vitest'
 
-describe('Error Utils', () => {
+import {
+  createErrorResponse,
+  type ErrorCode,
+  errorCodes,
+} from '@/utils/error.utils'
+
+describe('error Utils', () => {
   describe('errorCodes', () => {
     it('should have the correct error codes defined', () => {
       // Test that all error codes have the expected properties
@@ -47,10 +52,7 @@ describe('Error Utils', () => {
       }
 
       // Call the function
-      const response = createErrorResponse(
-        mockContext as any,
-        'NOT_FOUND'
-      )
+      const response = createErrorResponse(mockContext as any, 'NOT_FOUND')
 
       // Check that context.json was called with the correct arguments
       expect(mockContext.json).toHaveBeenCalledWith(
@@ -61,7 +63,7 @@ describe('Error Utils', () => {
             code: 'NOT_FOUND',
           },
         },
-        404
+        404,
       )
 
       // Check the return value
@@ -78,7 +80,7 @@ describe('Error Utils', () => {
       const response = createErrorResponse(
         mockContext as any,
         'NOT_FOUND',
-        'Custom error message'
+        'Custom error message',
       )
 
       // Check that context.json was called with the correct arguments
@@ -90,7 +92,7 @@ describe('Error Utils', () => {
             code: 'NOT_FOUND',
           },
         },
-        404
+        404,
       )
 
       // Check the return value
@@ -108,7 +110,7 @@ describe('Error Utils', () => {
         mockContext as any,
         'BAD_REQUEST',
         'Custom error message',
-        422 // Custom status code
+        422, // Custom status code
       )
 
       // Check that context.json was called with the correct arguments
@@ -120,7 +122,7 @@ describe('Error Utils', () => {
             code: 'BAD_REQUEST',
           },
         },
-        422
+        422,
       )
 
       // Check the return value
@@ -145,7 +147,7 @@ describe('Error Utils', () => {
         'VALIDATION_ERROR',
         'Validation failed',
         400,
-        additionalData
+        additionalData,
       )
 
       // Check that context.json was called with the correct arguments
@@ -158,7 +160,7 @@ describe('Error Utils', () => {
             ...additionalData,
           },
         },
-        400
+        400,
       )
 
       // Check the return value

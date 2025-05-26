@@ -13,7 +13,7 @@ const logger = pino()
  */
 export async function runMigrations(): Promise<void> {
   logger.info('Starting database migrations')
-  
+
   // Create a dedicated connection pool for migrations
   const migrationPool = new Pool({
     connectionString: env.DATABASE_URL,
@@ -21,13 +21,13 @@ export async function runMigrations(): Promise<void> {
     max: 1, // Use a single connection for migrations
     idleTimeoutMillis: 15000, // Close idle connections after 15 seconds
   })
-  
+
   try {
     const db = drizzle(migrationPool)
-    
+
     // Run migrations from the migrations folder
     await migrate(db, { migrationsFolder: './src/db/migrations' })
-    
+
     logger.info('Database migrations completed successfully')
   } catch (error) {
     logger.error({ error }, 'Failed to run database migrations')

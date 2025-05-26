@@ -1,12 +1,13 @@
-import { describe, it, expect, vi } from 'vitest'
-import {
-  createSuccessResponse,
-  createPaginatedResponse,
-  calculatePagination,
-  type PaginationInfo,
-} from '../../src/utils/response.utils'
+import { describe, expect, it, vi } from 'vitest'
 
-describe('Response Utils', () => {
+import {
+  calculatePagination,
+  createPaginatedResponse,
+  createSuccessResponse,
+  type PaginationInfo,
+} from '@/utils/response.utils'
+
+describe('response Utils', () => {
   describe('createSuccessResponse', () => {
     it('should create a success response with default parameters', () => {
       // Mock Hono context
@@ -27,7 +28,7 @@ describe('Response Utils', () => {
           message: 'OK',
           data,
         },
-        200
+        200,
       )
 
       // Check the return value
@@ -48,7 +49,7 @@ describe('Response Utils', () => {
         mockContext as any,
         data,
         'Item created successfully',
-        201
+        201,
       )
 
       // Check that context.json was called with the correct arguments
@@ -58,7 +59,7 @@ describe('Response Utils', () => {
           message: 'Item created successfully',
           data,
         },
-        201
+        201,
       )
 
       // Check the return value
@@ -74,7 +75,10 @@ describe('Response Utils', () => {
       }
 
       // Sample data
-      const data = [{ id: '1', name: 'Item 1' }, { id: '2', name: 'Item 2' }]
+      const data = [
+        { id: '1', name: 'Item 1' },
+        { id: '2', name: 'Item 2' },
+      ]
 
       // Sample pagination info
       const pagination: PaginationInfo = {
@@ -85,7 +89,11 @@ describe('Response Utils', () => {
       }
 
       // Call the function
-      const response = createPaginatedResponse(mockContext as any, data, pagination)
+      const response = createPaginatedResponse(
+        mockContext as any,
+        data,
+        pagination,
+      )
 
       // Check that context.json was called with the correct arguments
       expect(mockContext.json).toHaveBeenCalledWith(
@@ -95,7 +103,7 @@ describe('Response Utils', () => {
           data,
           pagination,
         },
-        200
+        200,
       )
 
       // Check the return value
@@ -109,7 +117,10 @@ describe('Response Utils', () => {
       }
 
       // Sample data
-      const data = [{ id: '1', name: 'Item 1' }, { id: '2', name: 'Item 2' }]
+      const data = [
+        { id: '1', name: 'Item 1' },
+        { id: '2', name: 'Item 2' },
+      ]
 
       // Sample pagination info
       const pagination: PaginationInfo = {
@@ -125,7 +136,7 @@ describe('Response Utils', () => {
         data,
         pagination,
         'Items retrieved successfully',
-        200
+        200,
       )
 
       // Check that context.json was called with the correct arguments
@@ -136,7 +147,7 @@ describe('Response Utils', () => {
           data,
           pagination,
         },
-        200
+        200,
       )
 
       // Check the return value
