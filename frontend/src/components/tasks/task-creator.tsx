@@ -97,7 +97,7 @@ export function TaskCreator({
     return (
       <Button
         size="lg"
-        variant="secondary"
+        variant="outline"
         className="w-full flex items-center justify-start text-muted-foreground hover:text-foreground h-11"
         onClick={() => setIsCreating(true)}
       >

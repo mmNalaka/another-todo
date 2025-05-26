@@ -11,6 +11,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/providers/auth-provider'
+import { Link } from '@tanstack/react-router'
 
 export function LoginForm({
   className,
@@ -37,7 +38,7 @@ export function LoginForm({
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="grid gap-6">
-              <div className="flex flex-col gap-4">
+              {/* <div className="flex flex-col gap-4">
                 <Button variant="outline" className="w-full" type="button">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path
@@ -61,7 +62,7 @@ export function LoginForm({
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
                   Or continue with
                 </span>
-              </div>
+              </div> */}
               <div className="grid gap-6">
                 {signInError && (
                   <div className="text-destructive text-sm">
@@ -82,7 +83,7 @@ export function LoginForm({
                   />
                 </div>
                 <div className="grid gap-3">
-                  <div className="flex items-center">
+                  {/* <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
                     <a
                       href="#"
@@ -90,7 +91,7 @@ export function LoginForm({
                     >
                       Forgot your password?
                     </a>
-                  </div>
+                  </div> */}
                   <Input
                     id="password"
                     type="password"
@@ -109,9 +110,9 @@ export function LoginForm({
               </div>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{' '}
-                <a href="/signup" className="underline underline-offset-4">
+                <Link to="/signup" className="underline underline-offset-4">
                   Sign up
-                </a>
+                </Link>
               </div>
             </div>
           </form>

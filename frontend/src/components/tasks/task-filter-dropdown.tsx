@@ -48,7 +48,6 @@ export function TaskFilterDropdown({
       <DropdownMenuTrigger asChild>
         <Button
           variant="default"
-          size="sm"
           className={cn("flex items-center gap-1", className)}
         >
           <Filter className="h-4 w-4" />

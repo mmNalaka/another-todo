@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Check, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react'
+import { Check, Plus } from 'lucide-react'
 
-import type { FieldType, SchemaField } from '@/lib/types'
+import type { SchemaField } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -13,22 +13,9 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
 import { useLocalization } from '@/hooks/use-localization'
 import { useCreateList } from '@/hooks/lists/use-create-list'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
 
 type CreateListDialogProps = React.ComponentProps<typeof Dialog>
 
@@ -72,12 +59,12 @@ const predefinedColors = [
   { name: 'Pastel Purple', value: '#e9d5ff' },
 ]
 
-const fieldTypes: Array<{ label: string; value: FieldType }> = [
-  { label: 'Text', value: 'text' },
-  { label: 'Number', value: 'number' },
-  { label: 'Date', value: 'date' },
-  { label: 'Checkbox', value: 'checkbox' },
-]
+// const fieldTypes: Array<{ label: string; value: FieldType }> = [
+//   { label: 'Text', value: 'text' },
+//   { label: 'Number', value: 'number' },
+//   { label: 'Date', value: 'date' },
+//   { label: 'Checkbox', value: 'checkbox' },
+// ]
 
 export function CreateListDialog(props: CreateListDialogProps) {
   const { t } = useLocalization()
@@ -91,27 +78,27 @@ export function CreateListDialog(props: CreateListDialogProps) {
 
   const { createList, isCreating } = useCreateList()
 
-  const addField = () => {
-    const newField: SchemaField = {
-      id: Date.now().toString(),
-      name: '',
-      type: 'text',
-      required: false,
-    }
-    setFields([...fields, newField])
-  }
+  // const addField = () => {
+  //   const newField: SchemaField = {
+  //     id: Date.now().toString(),
+  //     name: '',
+  //     type: 'text',
+  //     required: false,
+  //   }
+  //   setFields([...fields, newField])
+  // }
 
-  const updateField = (id: string, updates: Partial<SchemaField>) => {
-    setFields(
-      fields.map((field) =>
-        field.id === id ? { ...field, ...updates } : field,
-      ),
-    )
-  }
+  // const updateField = (id: string, updates: Partial<SchemaField>) => {
+  //   setFields(
+  //     fields.map((field) =>
+  //       field.id === id ? { ...field, ...updates } : field,
+  //     ),
+  //   )
+  // }
 
-  const removeField = (id: string) => {
-    setFields(fields.filter((field) => field.id !== id))
-  }
+  // const removeField = (id: string) => {
+  //   setFields(fields.filter((field) => field.id !== id))
+  // }
 
   const handleAddList = async () => {
     if (!listName.trim()) return
@@ -203,158 +190,6 @@ export function CreateListDialog(props: CreateListDialogProps) {
                   </button>
                 ))}
               </div>
-            </div>
-
-            <div className="pt-2">
-              <Collapsible
-                open={showAdvanced}
-                onOpenChange={setShowAdvanced}
-                className="w-full"
-              >
-                <div className="flex items-center">
-                  <CollapsibleTrigger asChild>
-                    <button
-                      type="button"
-                      className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900"
-                    >
-                      {showAdvanced ? (
-                        <ChevronUp className="mr-1 h-4 w-4" />
-                      ) : (
-                        <ChevronDown className="mr-1 h-4 w-4" />
-                      )}
-                      {t('list.create.form.advanced')}
-                    </button>
-                  </CollapsibleTrigger>
-                </div>
-
-                <CollapsibleContent className="mt-4 space-y-4 border-t pt-4">
-                  <div>
-                    <h3 className="text-base font-medium mb-2">
-                      {t('list.create.form.schema')}
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-4">
-                      {t('list.create.form.schema.description')}
-                    </p>
-
-                    <div className="space-y-4">
-                      {fields.map((field) => (
-                        <div
-                          key={field.id}
-                          className="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto_auto] gap-4 items-start"
-                        >
-                          <div className="flex flex-col h-full">
-                            <Label
-                              htmlFor={`field-name-${field.id}`}
-                              className="text-sm mb-2"
-                            >
-                              {t('list.create.form.field.name')}
-                            </Label>
-                            <Input
-                              id={`field-name-${field.id}`}
-                              value={field.name}
-                              onChange={(e) =>
-                                updateField(field.id, { name: e.target.value })
-                              }
-                              placeholder={t(
-                                'list.create.form.field.placeholder',
-                              )}
-                            />
-                          </div>
-
-                          <div className="flex flex-col h-full">
-                            <Label
-                              htmlFor={`field-type-${field.id}`}
-                              className="text-sm mb-2"
-                            >
-                              {t('list.create.form.field.type')}
-                            </Label>
-                            <Select
-                              value={field.type}
-                              onValueChange={(value) =>
-                                updateField(field.id, {
-                                  type: value as FieldType,
-                                })
-                              }
-                            >
-                              <SelectTrigger
-                                id={`field-type-${field.id}`}
-                                className="h-10"
-                              >
-                                <SelectValue
-                                  placeholder={t(
-                                    'list.create.form.field.type.placeholder',
-                                  )}
-                                />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {fieldTypes.map((type) => (
-                                  <SelectItem
-                                    key={type.value}
-                                    value={type.value}
-                                  >
-                                    {t(
-                                      `list.create.form.field.type.${type.value}`,
-                                    )}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="flex flex-col h-full pt-0">
-                            <Label
-                              htmlFor={`required-${field.id}`}
-                              className="text-sm mb-2"
-                            >
-                              {t('list.create.form.field.required')}
-                            </Label>
-                            <div className="flex items-center h-10">
-                              <Switch
-                                id={`required-${field.id}`}
-                                checked={field.required}
-                                onCheckedChange={(checked) =>
-                                  updateField(field.id, { required: checked })
-                                }
-                              />
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col h-full pt-0">
-                            <div className="text-sm mb-2 opacity-0">
-                              {/* Invisible label for alignment */}
-                              Action
-                            </div>
-                            <div className="flex items-center h-10">
-                              <Button
-                                type="button"
-                                variant="destructiveGhost"
-                                size="icon"
-                                onClick={() => removeField(field.id)}
-                                disabled={fields.length === 1}
-                                className="h-9 w-9"
-                                aria-label={t('list.create.form.field.remove')}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addField}
-                      className="mt-4"
-                    >
-                      <Plus className="mr-1 h-4 w-4" />
-                      {t('list.create.form.field.add')}
-                    </Button>
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
             </div>
           </div>
 

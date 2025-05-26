@@ -17,7 +17,6 @@ import { useUpdateTaskPositions } from '@/hooks/tasks/use-update-task-positions'
 import { useUpdateList } from '@/hooks/lists/use-update-list'
 import { useDebouncedSave } from '@/hooks/use-debounced-save'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { NotFound } from '@/components/ui/not-found'
@@ -129,14 +128,6 @@ function RouteComponent() {
       debouncedSave({ id: listId, title: newTitle })
     }
 
-    // Handle description change with auto-save
-    const handleDescriptionChange = (
-      e: React.ChangeEvent<HTMLTextAreaElement>,
-    ) => {
-      const newDescription = e.target.value.trim()
-      setDescription(newDescription)
-      debouncedSave({ id: listId, description: newDescription })
-    }
 
     const handleSelectTask = (task: Task) => {
       setSelectedTaskId(task.id)
@@ -207,9 +198,6 @@ function RouteComponent() {
               isOwner={isOwner}
               collaborators={listData.collaborators}
             />
-            {listData.isFrozen && (
-              <Badge variant="destructive">{t('lists.frozen')}</Badge>
-            )}
             {isOwner && (
               <>
                 <FreezeListButton
@@ -219,44 +207,13 @@ function RouteComponent() {
                 />
                 <ListDeleteButton
                   list={listData}
-                  variant="ghost"
+                  variant="destructive"
                   showIcon={true}
                   onSuccess={() => navigate({ to: '/tasks', search: { filter: 'uncompleted' } })}
                 />
               </>
             )}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  <Filter className="h-4 w-4" />
-                  {filter === 'completed' ? 'Completed' : 
-                   filter === 'today' ? 'Today' : 
-                   'Active'}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigate({ to: `/lists/${listId}`, search: { filter: 'uncompleted' } })}>
-                  <div className="flex items-center gap-2">
-                    {filter === 'uncompleted' && <span className="text-primary">✓</span>}
-                    Active
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate({ to: `/lists/${listId}`, search: { filter: 'completed' } })}>
-                  <div className="flex items-center gap-2">
-                    <CheckSquare className="h-4 w-4 mr-1" />
-                    {filter === 'completed' && <span className="text-primary">✓</span>}
-                    Completed
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate({ to: `/lists/${listId}`, search: { filter: 'today' } })}>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    {filter === 'today' && <span className="text-primary">✓</span>}
-                    Today
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <TaskFilterDropdown currentFilter={filter as string} listId={listId} />
             <Badge variant="secondary" className="h-8">
               {tasks.length || 0} {t('tasks.title')}
             </Badge>
@@ -278,11 +235,6 @@ function RouteComponent() {
                 isOwner={isOwner}
                 collaborators={listData.collaborators}
               />
-              {listData.isFrozen && (
-                <Badge variant="destructive" className="ml-2">
-                  {t('lists.frozen')}
-                </Badge>
-              )}
               {isOwner && (
                 <>
                   <FreezeListButton
@@ -303,20 +255,6 @@ function RouteComponent() {
               <Badge variant="secondary" className="ml-2 h-8">
                 {tasks.length || 0} {t('tasks.title')}
               </Badge>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <Textarea
-                value={description}
-                onChange={handleDescriptionChange}
-                placeholder={
-                  t('todo.taskDescription') || 'Add a description...'
-                }
-                className="min-h-[40px] text-sm border-none resize-none bg-transparent! placeholder:text-gray-400 placeholder:italic shadow-none"
-                readOnly={listData.isFrozen && !isOwner}
-              />
             </div>
           </div>
         </div>
