@@ -3,10 +3,12 @@ import type { LucideIcon } from 'lucide-react'
 
 import {
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { useLocalization } from '@/hooks/use-localization'
 
 export function NavMain({
   items,
@@ -24,8 +26,11 @@ export function NavMain({
     }>
   }>
 }) {
+  const { t } = useLocalization()
+
   return (
     <SidebarGroup>
+      <SidebarGroupLabel>{t('sidebar.main.title')}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>

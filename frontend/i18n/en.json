@@ -41,7 +41,8 @@
   "sidebar.title": "Just DO!",
   "sidebar.subtitle": "Get S*** Done!",
 
-  "sidebar.group.private": "General",
+  "sidebar.main.title": "Individual Tasks",
+  "sidebar.group.lists": "Task Lists",
   "sidebar.group.shared": "Shared",
 
   "lists.title": "Lists",

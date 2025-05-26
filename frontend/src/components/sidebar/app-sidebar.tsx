@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Calendar, CheckSquare, ClipboardCheck, Home } from 'lucide-react'
+import { Calendar, CheckSquare, ClipboardCheck, Home, Square } from 'lucide-react'
 
 import { ThemeSwitcher } from '@/components/theme-switcher'
 import { NavMain } from '@/components/sidebar/nav-main'
@@ -24,9 +24,15 @@ const data = {
   },
   navMain: [
     { 
-      url: '/tasks?filter=uncompleted', 
-      title: 'Home', 
+      url: '/tasks?filter=all', 
+      title: 'All Tasks', 
       icon: Home,
+      searchParams: { filter: 'all' } 
+    },
+    { 
+      url: '/tasks?filter=uncompleted', 
+      title: 'Uncompleted', 
+      icon: Square,
       searchParams: { filter: 'uncompleted' } 
     },
     {

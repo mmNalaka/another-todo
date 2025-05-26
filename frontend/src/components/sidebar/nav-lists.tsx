@@ -28,7 +28,7 @@ export function NavTaskLists() {
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel className="justify-between">
-        {t('lists.title')}
+        {t('sidebar.group.lists')}
       </SidebarGroupLabel>
       <SidebarMenu>
         {shouldShowLoading && (
