@@ -79,22 +79,16 @@ export function ShareListDialog({
           <Share2 className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{t('lists.share.title') as string}</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto w-[95vw] p-4">
+        <DialogHeader className="pb-2">
+          <DialogTitle className="text-lg">{t('lists.share.title') as string}</DialogTitle>
+          <DialogDescription className="text-xs sm:text-sm">
             {t('lists.share.description') as string}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 relative">
-          <div className="flex items-center space-x-2 p-3 bg-secondary/30 rounded-md my-4">
-            <Link2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-            <div className="flex-1 overflow-hidden">
-              <p className="text-sm truncate text-muted-foreground w-52">
-                {window.location.origin}/lists/{listId}
-              </p>
-            </div>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-2 bg-secondary/30 rounded-md my-2">
             <Button
               variant="outline"
               size="sm"
@@ -104,17 +98,17 @@ export function ShareListDialog({
                 )
                 toast.success(t('lists.share.linkCopied') as string)
               }}
-              className="flex-shrink-0"
+              className="flex-shrink-0 w-full sm:w-auto h-8 text-xs"
             >
-              <Copy className="h-4 w-4 mr-2" />
+              <Copy className="h-3 w-3 mr-1" />
               {t('lists.share.copyLink') as string}
             </Button>
           </div>
 
           {isOwner && (
-            <div className="flex items-end gap-2">
-              <div className="grid flex-1 gap-2">
-                <label htmlFor="email" className="text-sm font-medium">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="grid w-full gap-1">
+                <label htmlFor="email" className="text-xs font-medium">
                   {t('lists.share.emailLabel') as string}
                 </label>
                 <Input
@@ -123,10 +117,11 @@ export function ShareListDialog({
                   placeholder={t('lists.share.emailPlaceholder') as string}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="h-8 text-xs"
                 />
               </div>
-              <div className="grid gap-2">
-                <label htmlFor="role" className="text-sm font-medium">
+              <div className="grid gap-1">
+                <label htmlFor="role" className="text-xs font-medium">
                   {t('lists.share.roleLabel') as string}
                 </label>
                 <Select
@@ -135,38 +130,40 @@ export function ShareListDialog({
                     setRole(value as 'editor' | 'viewer')
                   }
                 >
-                  <SelectTrigger id="role" className="w-[110px]">
+                  <SelectTrigger id="role" className="w-full sm:w-[90px] h-8 text-xs">
                     <SelectValue
                       placeholder={t('lists.share.rolePlaceholder') as string}
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="editor">
+                    <SelectItem value="editor" className="text-xs">
                       {t('lists.share.roleEditor') as string}
                     </SelectItem>
-                    <SelectItem value="viewer">
+                    <SelectItem value="viewer" className="text-xs">
                       {t('lists.share.roleViewer') as string}
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <Button
-                className="mb-px"
-                onClick={handleAddCollaborator}
-                disabled={isAddingCollaborator}
-              >
-                <UserPlus className="h-4 w-4 mr-2" />
-                {t('lists.share.addButton') as string}
-              </Button>
+              <div className="flex justify-end sm:justify-start">
+                <Button
+                  className="w-full sm:w-auto h-8 text-xs"
+                  onClick={handleAddCollaborator}
+                  disabled={isAddingCollaborator}
+                >
+                  <UserPlus className="h-3 w-3 mr-1" />
+                  {t('lists.share.addButton') as string}
+                </Button>
+              </div>
             </div>
           )}
 
           {collaborators.length > 0 && (
-            <div className="mt-4">
-              <h3 className="text-sm font-medium mb-2">
+            <div className="mt-2">
+              <h3 className="text-xs font-medium mb-1">
                 {t('lists.share.collaboratorsTitle') as string}
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {collaborators.map((collaborator) => (
                   <CollaboratorItem
                     key={collaborator.userId}
@@ -179,11 +176,12 @@ export function ShareListDialog({
             </div>
           )}
         </div>
-        <DialogFooter className="sm:justify-start">
+        <DialogFooter className="sm:justify-start pt-2">
           <Button
             type="button"
             variant="secondary"
             onClick={() => setOpen(false)}
+            className="h-8 text-xs"
           >
             {t('generic.close') as string}
           </Button>
