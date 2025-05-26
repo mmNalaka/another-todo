@@ -57,6 +57,9 @@ export function NavTaskLists() {
                 params={{
                   listId: item.id,
                 }}
+                search={{
+                  filter: 'all',
+                }}
               >
                 <Hash color={item.color} />
                 <span>{item.title}</span>

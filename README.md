@@ -4,15 +4,15 @@
 
 ### Core Features
 
-- [ ] As a user, I can create to-do items, such as a grocery list.
-- [ ] As a user, I can mark to-do items as "done" so that I can avoid clutter and focus on things that are still pending.
-- [ ] As a user, I can filter the to-do list and view items that were marked as done so that I can retrospect on my prior progress.
+- [x] As a user, I can create to-do items, such as a grocery list.
+- [x] As a user, I can mark to-do items as "done" so that I can avoid clutter and focus on things that are still pending.
+- [x] As a user, I can filter the to-do list and view items that were marked as done so that I can retrospect on my prior progress.
 
 ### Task Organization
 
-- [ ] As a user, I can add sub-tasks to my to-do items so that I could make logical groups of tasks and see their overall progress.
-- [ ] As a user, I can make infinite nested levels of subtasks.
-- [ ] As a user, I can change the order of tasks via drag & drop.
+- [x] As a user, I can add sub-tasks to my to-do items so that I could make logical groups of tasks and see their overall progress.
+- [x] As a user, I can make infinite nested levels of subtasks.
+- [x] As a user, I can change the order of tasks via drag & drop.
 - [ ] As a user, I can move/convert subtasks to tasks via drag & drop.
 
 ### Cost Tracking
@@ -27,8 +27,8 @@
 
 ### List Management
 
-- [ ] As a user, I can create multiple to-do lists where each list has its unique URL that I can share with my friends so that I could have separate to-do lists for my groceries and work-related tasks.
-- [ ] As an owner/creator of a certain to-do list, I can freeze/unfreeze a to-do list I've created to avoid other users from mutating it.
+- [x] As a user, I can create multiple to-do lists where each list has its unique URL that I can share with my friends so that I could have separate to-do lists for my groceries and work-related tasks.
+- [x] As an owner/creator of a certain to-do list, I can freeze/unfreeze a to-do list I've created to avoid other users from mutating it.
 
 ### Special Task Types
 
@@ -63,5 +63,56 @@ ubiquiti-todo/
 
 ```bash
 docker compose up -d
+pnpm db:push
 pnpm run dev
+```
+
+## Running locally
+
+To run the application in a production-like environment locally, follow these steps:
+
+### Prerequisites
+
+- Docker and Docker Compose installed on your machine
+- Git to clone the repository
+
+### Steps to run
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/ubiquiti-todo.git
+   cd ubiquiti-todo
+   ```
+
+2. Create a `.env` file in the root directory with the following variables (or use the defaults):
+   ```
+   POSTGRES_PASSWORD=postgres
+   POSTGRES_USER=postgres
+   POSTGRES_DB=ubiquiti-todo
+   JWT_SECRET=super_secret_key
+   ACCESS_TOKEN_EXPIRY_MINUTES=15
+   REFRESH_TOKEN_EXPIRY_DAYS=30
+   ```
+
+3. Build and start the containers using the production Docker Compose configuration:
+   ```bash
+   docker compose -f docker-compose.prod.yaml up --build
+   ```
+
+4. Wait for all services to start. You should see logs indicating that the backend, frontend, and database are running.
+
+5. Access the application:
+   - Frontend: http://localhost:8080
+   - Backend API: http://localhost:4000
+
+### Stopping the application
+
+To stop the application, press `Ctrl+C` in the terminal where it's running, or run:
+```bash
+docker compose -f docker-compose.prod.yaml down
+```
+
+To completely remove all data and start fresh, add the `-v` flag to remove volumes:
+```bash
+docker compose -f docker-compose.prod.yaml down -v
 ```
