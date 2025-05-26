@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { Calendar, CheckSquare, Filter } from 'lucide-react'
 import type { Task } from '@/lib/types'
 import { useLocalization } from '@/hooks/use-localization'
 import { listQueryOptions } from '@/hooks/lists/use-fetch-list'
@@ -18,11 +17,9 @@ import { useUpdateList } from '@/hooks/lists/use-update-list'
 import { useDebouncedSave } from '@/hooks/use-debounced-save'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { NotFound } from '@/components/ui/not-found'
 import { useAuth } from '@/providers/auth-provider'
 import { TaskFilterDropdown } from '@/components/tasks/task-filter-dropdown'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 export const Route = createFileRoute('/_auth/lists/$listId')({
   loader: async ({ context: { queryClient }, params: { listId } }) => {
@@ -71,7 +68,6 @@ function RouteComponent() {
 
     // State for list fields
     const [title, setTitle] = useState(listData.title)
-    const [description, setDescription] = useState(listData.description || '')
 
     // Use the debounced save hook instead of the inline implementation
     const { debouncedSave } = useDebouncedSave<
@@ -83,7 +79,6 @@ function RouteComponent() {
 
     useEffect(() => {
       setTitle(listData.title)
-      setDescription(listData.description || '')
     }, [listData])
 
     // Set up filter based on the URL parameter
