@@ -93,17 +93,19 @@ function RouteComponent() {
     debouncedSave({ id: task.id, isCompleted: !task.isCompleted })
   }
 
-  const handleReorderTasks = (reorderedTasks: Array<Task>) => {
+  const handleReorderTasks = (reorderedTasks: Array<Task>, parentId?: string) => {
     // Extract just the id and position for the API call
     const taskPositions = reorderedTasks.map((task) => ({
       id: task.id,
       position: task.position,
+      parentId,
     }))
 
     // Use null as listId since these are tasks not associated with a specific list
     updateTaskPositions({
       listId: 'all-tasks', // Use a special identifier for the all tasks view
       tasks: taskPositions,
+      parentId,
     })
   }
 
@@ -141,6 +143,7 @@ function RouteComponent() {
             onNavigateToSubtask={handleNavigateToSubtask}
             onNavigateBack={handleNavigateBack}
             isSubtask={navigationStack.length > 0}
+            onReorderTasks={handleReorderTasks}
           />
         )}
       </div>

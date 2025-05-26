@@ -184,7 +184,7 @@ function RouteComponent() {
       })
     }
 
-    const handleReorderTasks = (reorderedTasks: Array<Task>) => {
+    const handleReorderTasks = (reorderedTasks: Array<Task>, parentId?: string) => {
       // Extract just the id and position for the API call
       const taskPositions = reorderedTasks.map((task) => ({
         id: task.id,
@@ -194,6 +194,7 @@ function RouteComponent() {
       updateTaskPositions({
         listId,
         tasks: taskPositions,
+        parentId,
       })
     }
 
@@ -350,6 +351,7 @@ function RouteComponent() {
               onNavigateToSubtask={handleNavigateToSubtask}
               onNavigateBack={handleNavigateBack}
               isSubtask={navigationStack.length > 0}
+              onReorderTasks={handleReorderTasks}
             />
           )}
         </div>

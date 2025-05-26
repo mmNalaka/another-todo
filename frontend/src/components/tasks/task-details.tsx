@@ -46,6 +46,7 @@ type TaskDetailProps = {
   onNavigateToSubtask?: (subtask: Task) => void
   onNavigateBack?: () => void
   isSubtask?: boolean
+  onReorderTasks?: (tasks: Array<Task>, parentId?: string) => void
 }
 
 type TaskUpdateData = {
@@ -58,6 +59,7 @@ export function TaskDetails({
   onNavigateToSubtask,
   onNavigateBack,
   isSubtask = false,
+  onReorderTasks,
 }: TaskDetailProps) {
   const { t } = useLocalization()
   const isMobile = useIsMobile()
@@ -388,6 +390,8 @@ export function TaskDetails({
                 selectedTask={null}
                 onSelectTask={onSelectTask}
                 onToggleCompletion={handleToggleCompletion}
+                onReorderTasks={onReorderTasks}
+                parentId={task.id}
               />
             )}
 

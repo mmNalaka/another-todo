@@ -33,13 +33,12 @@ import { Button } from '@/components/ui/button'
 interface TaskListProps {
   tasks: Array<Task>
   selectedTask: string | null
-  listClasses?: string
   onSelectTask: (task: Task) => void
   onToggleCompletion: (task: Task) => void
-  onReorderTasks?: (tasks: Array<Task>) => void
+  parentId?: string
+  listClasses?: string
+  onReorderTasks?: (tasks: Array<Task>, parentId?: string) => void
 }
-
-// Using getPriorityClasses from utils.ts
 
 interface SortableTaskItemProps {
   task: Task
@@ -191,6 +190,7 @@ export function TaskList({
   onSelectTask,
   onToggleCompletion,
   onReorderTasks,
+  parentId,
 }: TaskListProps) {
   // Prevent opening detail view when clicking on checkbox or dropdown
   const handleDefaultClick = (
@@ -251,7 +251,7 @@ export function TaskList({
 
       // Call the callback to update the tasks in the parent component
       if (onReorderTasks) {
-        onReorderTasks(updatedTasks)
+        onReorderTasks(updatedTasks, parentId)
       }
     }
   }

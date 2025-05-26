@@ -13,6 +13,7 @@ type TaskPosition = {
 type Variables = {
   listId: string
   tasks: Array<TaskPosition>
+  parentId?: string
 }
 
 interface UpdateTaskPositionsOptions {
@@ -146,7 +147,7 @@ export function useUpdateTaskPositions<TData = Array<Task>>(
             queryClient.setQueryData(['tasks'], context.previousTasks)
           } else if (!context.isAllTasksView && context.previousList) {
             queryClient.setQueryData(['lists', variables.listId], context.previousList)
-          }
+          }            
         }
         
         console.error('Task position update error:', err)
@@ -168,6 +169,11 @@ export function useUpdateTaskPositions<TData = Array<Task>>(
             queryClient.invalidateQueries({ queryKey: ['tasks'] })
           } else {
             queryClient.invalidateQueries({ queryKey: ['lists', variables.listId] })
+          }
+
+          // If we have a parent id, invalidate the subtasks query
+          if (variables.parentId) {
+            queryClient.invalidateQueries({ queryKey: ['tasks', variables.parentId] })
           }
         }
       },

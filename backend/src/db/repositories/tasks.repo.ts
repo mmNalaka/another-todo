@@ -64,7 +64,7 @@ export async function getTaskById(taskId: string) {
     .select()
     .from(tasksTable)
     .where(eq(tasksTable.parentTaskId, taskId))
-    .orderBy(tasksTable.createdAt)
+    .orderBy(asc(tasksTable.position), desc(tasksTable.createdAt))
 
   let parentTask = null
   if (task.parentTaskId) {
