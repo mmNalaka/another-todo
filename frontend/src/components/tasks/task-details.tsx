@@ -20,6 +20,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import {
   Select,
@@ -37,6 +38,7 @@ import { TaskCreator } from '@/components/tasks/task-creator'
 import { useLocalization } from '@/hooks/use-localization'
 import { useFetchTask } from '@/hooks/tasks/use-fetch-task'
 import { useUpdateTask } from '@/hooks/tasks/use-update-task'
+import { TaskDeleteButton } from '@/components/tasks/task-delete-button'
 
 type TaskDetailProps = {
   task: Task
@@ -180,9 +182,12 @@ export function TaskDetails({
             <Loader2 className="h-4 w-4 ml-2 animate-spin text-emerald-500" />
           )}
         </div>
-        <Button variant="ghost" size="sm" onClick={onClose}>
-          <X className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center space-x-1">
+          <TaskDeleteButton task={task} onSuccess={onClose} />
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-4 lg:space-y-6">

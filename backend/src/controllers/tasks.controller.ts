@@ -237,12 +237,14 @@ export const deleteTaskHandler = factory.createHandlers(
       return createErrorResponse(c, 'NOT_FOUND')
     }
 
+    const isOwner = userInfo.id === existingTask.userId
     const { allowed, error } = await checkListTaskPermission(
       existingTask,
       userInfo.id,
       'editor',
     )
-    if (!allowed) {
+    
+    if (!isOwner && !allowed) {
       return createErrorResponse(c, error || 'FORBIDDEN')
     }
 
