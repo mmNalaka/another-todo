@@ -4,8 +4,10 @@ import { cors } from 'hono/cors'
 import { requestId } from 'hono/request-id'
 
 import { corsOptions } from '@/config/cors.config'
+import { wsAuthMiddleware } from '@/middlewares/ws-auth.mw'
 import { errorHandler } from '@/middlewares/error-handler.mw'
 import { pinoLogger } from '@/middlewares/pino-logger.mw'
+import { createWebSocketHandler } from '@/lib/websocket-handler'
 import authRouter from '@/routes/auth.router'
 import globalRoutes from '@/routes/global.routes'
 import listsRoutes from '@/routes/lists.router'
@@ -25,12 +27,13 @@ app.route('/api/auth', authRouter)
 app.route('/api/tasks', tasksRoutes)
 app.route('/api/lists', listsRoutes)
 
-// WebSocket
+// WebSocket route with authentication middleware
 app.get(
-  '/ws',
-  upgradeWebSocket((c) => ({
-    // https://hono.dev/helpers/websocket
-  }))
+  '/api/ws',
+  wsAuthMiddleware,
+  upgradeWebSocket((c) => {
+    return createWebSocketHandler(c)
+  })
 )
 
 

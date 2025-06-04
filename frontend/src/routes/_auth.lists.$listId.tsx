@@ -20,6 +20,8 @@ import { Badge } from '@/components/ui/badge'
 import { NotFound } from '@/components/ui/not-found'
 import { useAuth } from '@/providers/auth-provider'
 import { TaskFilterDropdown } from '@/components/tasks/task-filter-dropdown'
+import { PresenceIndicator } from '@/components/presence/presence-indicator'
+import { WebSocketProvider } from '@/providers/websocket-provider'
 
 export const Route = createFileRoute('/_auth/lists/$listId')({
   loader: async ({ context: { queryClient }, params: { listId } }) => {
@@ -185,8 +187,9 @@ function RouteComponent() {
     }
 
     return (
-      <div className="flex flex-col h-full overflow-hidden">
-        <div className="flex-none p-4 space-y-4">
+      <WebSocketProvider>
+        <div className="flex flex-col h-full overflow-hidden">
+          <div className="flex-none p-4 space-y-4">
           <div className="flex items-center justify-end gap-2 md:hidden order-first">
             <ShareListDialog
               listId={listData.id}
@@ -222,6 +225,7 @@ function RouteComponent() {
                 className="font-semibold text-2xl lg:text-3xl border-none p-0 bg-transparent! px-2 shadow-none"
                 readOnly={listData.isFrozen && !isOwner}
               />
+              <PresenceIndicator listId={listId} />
             </div>
 
             <div className="hidden md:flex items-center gap-2">
@@ -289,6 +293,7 @@ function RouteComponent() {
           )}
         </div>
       </div>
+      </WebSocketProvider>
     )
   } catch (error) {
     // If there's an error, show the not found page

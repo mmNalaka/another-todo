@@ -51,11 +51,24 @@ export async function getAllUserTasks(
     .orderBy(asc(tasksTable.position), desc(tasksTable.createdAt))
 }
 
-export async function getTaskById(taskId: string) {
+export async function getJustTask(taskId: string) {
   const [task] = await db
     .select()
     .from(tasksTable)
     .where(eq(tasksTable.id, taskId))
+
+  return task
+}
+
+export async function getTaskById(taskId: string) {
+  const task = await db
+    .select()
+    .from(tasksTable)
+    .where(eq(tasksTable.id, taskId))
+    .limit(1)
+    .then((res) => res[0])
+
+  if (!task) return null
 
   const subTasks = await db
     .select()
@@ -89,6 +102,7 @@ export async function createTask(data: Omit<NewTask, 'id'>) {
       ...data,
     })
     .returning()
+    .then((res) => res[0])
 }
 
 export async function updateTask(

@@ -3,12 +3,14 @@ import { zValidator } from '@hono/zod-validator'
 import type { Task, TasksList } from '@/db/schemas/tasks.schema'
 import type { AuthenticatedUser } from '@/middlewares/authenticated.mw'
 import type { ErrorCode } from '@/utils/error.utils'
+import { broadcastToList } from '@/services/websocket.service'
 
 import { getListById, getListCollaborators } from '@/db/repositories/lists.repo'
 import {
   createTask,
   deleteTask,
   getAllUserTasks,
+  getJustTask,
   getTaskById,
   updateTask,
   updateTaskPositions,
@@ -111,7 +113,7 @@ export const getTaskByIdHandler = factory.createHandlers(
     const { id } = c.req.valid('param')
 
     const task = await getTaskById(id)
-    const isOwner = userInfo.id === task.userId
+    const isOwner = userInfo.id === task?.userId
 
     if (!task) {
       return createErrorResponse(c, 'NOT_FOUND', 'Task not found')
@@ -122,7 +124,7 @@ export const getTaskByIdHandler = factory.createHandlers(
       userInfo.id,
       'viewer',
     )
-    if (!isOwner && !allowed) {
+    if (!isOwner && (!allowed)) {
       return createErrorResponse(
         c,
         error || 'FORBIDDEN',
@@ -164,7 +166,7 @@ export const createTaskHandler = factory.createHandlers(
       }
 
       // Only the owner can create tasks in a non-shared list
-      if (!isListOwner && !list.isShared) {
+      if (!isListOwner && (!list.isShared || list.isFrozen)) {
         return createErrorResponse(
           c,
           'FORBIDDEN',
@@ -200,6 +202,23 @@ export const createTaskHandler = factory.createHandlers(
     if (!task) {
       return createErrorResponse(c, 'INTERNAL_SERVER_ERROR')
     }
+    
+    // Since task is the return value of createTask, which returns a single task, not an array
+    // If the task is part of a list, broadcast the change to all users in the list
+    if (task && task.listId) {
+      const eventData = {
+        type: 'task:create',
+        task,
+        timestamp: Date.now(),
+        userId: userInfo.id,
+        userName: userInfo.email || 'Unknown user' 
+      }
+      const messageStr = JSON.stringify(eventData)
+      // Ensure listId is a string before calling broadcastToList
+      if (task.listId && typeof task.listId === 'string') {
+        broadcastToList(task.listId, messageStr, userInfo.id)
+      }
+    }
 
     return createSuccessResponse(c, task, 'Task created successfully', 201)
   },
@@ -216,19 +235,19 @@ export const updateTaskHandler = factory.createHandlers(
 
     // Check if task exists
     const existingTask = await getTaskById(id)
-    const isOwner = userInfo.id === existingTask.userId
+    const isOwner = userInfo.id === existingTask?.userId
 
     if (!existingTask) {
       return createErrorResponse(c, 'NOT_FOUND')
     }
 
-    const { allowed, error } = await checkListTaskPermission(
+    const { allowed, error, list } = await checkListTaskPermission(
       existingTask,
       userInfo.id,
       'editor',
     )
     // If the user is not the owner and does not have permission, return forbidden
-    if (!isOwner && !allowed) {
+    if (!isOwner && (!allowed || list?.isFrozen)) {
       return createErrorResponse(c, error || 'FORBIDDEN')
     }
 
@@ -247,6 +266,23 @@ export const updateTaskHandler = factory.createHandlers(
 
     if (!updatedTask) {
       return createErrorResponse(c, 'INTERNAL_SERVER_ERROR')
+    }
+    
+    // Broadcast task update event to other users
+    if (updatedTask.listId) {
+      const eventData = {
+        type: 'task:update',
+        task: updatedTask,
+        timestamp: Date.now(),
+        userId: userInfo.id,
+        userName: userInfo.email || 'Unknown user'
+      }
+      const messageStr = JSON.stringify(eventData)
+      
+      // Broadcast the update to all users in the list
+      if (typeof updatedTask.listId === 'string') {
+        broadcastToList(updatedTask.listId, messageStr, userInfo.id)
+      }
     }
 
     return createSuccessResponse(c, updatedTask)
@@ -342,6 +378,22 @@ export const reorderTasksHandler = factory.createHandlers(
         'Failed to update task positions',
       )
     }
+    
+    // Only broadcast reordering events for list tasks (not for all-tasks view)
+    if (!isAllTasksView) {
+      const eventData = {
+        type: 'task:reorder',
+        tasks: updatedTasks,
+        listId,
+        timestamp: Date.now(),
+        userId: userInfo.id,
+        userName: userInfo.email || 'Unknown user'
+      }
+      const messageStr = JSON.stringify(eventData)
+      
+      // Broadcast the reordering to all users in the list
+      broadcastToList(listId, messageStr, userInfo.id)
+    }
 
     return createSuccessResponse(c, updatedTasks)
   },
@@ -355,19 +407,19 @@ export const deleteTaskHandler = factory.createHandlers(
     const { id } = c.req.valid('param')
 
     // Check if task exists
-    const existingTask = await getTaskById(id)
+    const existingTask = await getJustTask(id)
     if (!existingTask) {
       return createErrorResponse(c, 'NOT_FOUND')
     }
 
     const isOwner = userInfo.id === existingTask.userId
-    const { allowed, error } = await checkListTaskPermission(
+    const { allowed, error, list } = await checkListTaskPermission(
       existingTask,
       userInfo.id,
       'editor',
     )
 
-    if (!isOwner && !allowed) {
+    if (!isOwner && (!allowed || list?.isFrozen)) {
       return createErrorResponse(c, error || 'FORBIDDEN')
     }
 
@@ -375,6 +427,23 @@ export const deleteTaskHandler = factory.createHandlers(
 
     if (!deletedTask) {
       return createErrorResponse(c, 'INTERNAL_SERVER_ERROR', 'Task not deleted')
+    }
+    
+    // Broadcast task delete event to other users
+    if (existingTask.listId) {
+      const eventData = {
+        type: 'task:delete',
+        taskId: id, // Use task ID directly since we know it exists
+        timestamp: Date.now(),
+        userId: userInfo.id,
+        userName: userInfo.email || 'Unknown user'
+      }
+      const messageStr = JSON.stringify(eventData)
+      
+      // Broadcast the deletion to all users in the list
+      if (typeof existingTask.listId === 'string') {
+        broadcastToList(existingTask.listId, messageStr, userInfo.id)
+      }
     }
 
     return createSuccessResponse(c, deletedTask)
