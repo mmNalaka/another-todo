@@ -1,13 +1,17 @@
 import { serve } from '@hono/node-server'
 import pino from 'pino'
 
-import app from '@/app'
+import app, { injectWebSocket} from '@/app'
 import env from '@/config/env.config'
 import { runMigrations } from '@/db/migrate'
-import { hocuspocus } from '@/lib/realtime.lib'
 
 const logger = pino()
 const port = env.PORT
+
+const serverConfig = {
+  fetch: app.fetch,
+  port,
+}
 
 /**
  * Start the server after running migrations
@@ -20,21 +24,10 @@ async function startServer() {
     }
 
     // Start the server
-    serve(
-      {
-        fetch: app.fetch,
-        port,
-      },
-      (info) => {
-        // Handle WebSocket connections using Hocuspocus for real-time collaboration
-        // https://tiptap.dev/docs/hocuspocus
-        hocuspocus.hooks('onListen', {
-          instance: hocuspocus,
-          configuration: hocuspocus.configuration,
-          port: info.port,
-        })
-      },
-    )
+    const server = serve(serverConfig)
+    // Inject WebSocket
+    injectWebSocket(server)
+
 
     logger.info(`Server is running on port http://localhost:${port}`)
   } catch (error) {
