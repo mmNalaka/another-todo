@@ -46,7 +46,7 @@
 
 ### Advanced Features
 
-- [ ] As another user, I can collaborate in real-time with other users so that we can (for example) edit our family shopping list together.
+- [x] As another user, I can collaborate in real-time with other users so that we can (for example) edit our family shopping list together.
 - [ ] As a user, I can use my VR goggles to edit/browse multiple to-do lists in parallel in 3D space so that I can feel ultra-productive.
 
 ## Project Structure
