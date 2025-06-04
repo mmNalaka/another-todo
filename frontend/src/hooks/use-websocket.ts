@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { wsService, ConnectionStatus } from '@/lib/websocket/websocket-service'
+import type { ConnectionStatus } from '@/lib/websocket/websocket-service';
+import { wsService } from '@/lib/websocket/websocket-service'
 
 export interface UseWebSocketOptions {
   listId: string

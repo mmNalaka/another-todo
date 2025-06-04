@@ -1,8 +1,8 @@
 // Component for showing online users in a collaborative task list
+import { useMemo } from 'react'
 import { usePresence } from '@/hooks/use-presence'
 import { ConnectionStatus } from '@/lib/websocket/websocket-service'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { useMemo } from 'react'
 import { Badge } from '@/components/ui/badge'
 
 // Predefined colors for avatars - nice, vibrant colors with good contrast

@@ -1,7 +1,7 @@
 import { toast } from 'sonner'
+import type { Task } from '@/lib/types'
 import { env } from '@/env'
 import { queryClient } from '@/integrations/tanstack-query/root-provider'
-import type { Task } from '@/lib/types'
 
 // WebSocket event types
 type WebSocketMessage = {
@@ -22,14 +22,14 @@ type MessageListener = (data: any) => void
 
 class WebSocketService {
   private ws: WebSocket | null = null
-  private listeners: Map<string, MessageListener[]> = new Map()
+  private listeners: Map<string, Array<MessageListener>> = new Map()
   private reconnectAttempts = 0
   private maxReconnectAttempts = 5
   private reconnectInterval = 2000 // Start with 2 seconds
   private sessionId: string
   private listId: string | null = null
   private status: ConnectionStatus = ConnectionStatus.CLOSED
-  private statusListeners: ((status: ConnectionStatus) => void)[] = []
+  private statusListeners: Array<(status: ConnectionStatus) => void> = []
 
   constructor() {
     // Generate a unique session ID for this browser session
@@ -212,7 +212,7 @@ class WebSocketService {
   }
 
   // Handle task reorder event - update TanStack Query cache
-  private handleTaskReorder(tasks: Task[]): void {
+  private handleTaskReorder(tasks: Array<Task>): void {
     const parentId = tasks[0].parentTaskId
     if (!parentId) {
       queryClient.invalidateQueries({ queryKey: ['lists', this.listId] })

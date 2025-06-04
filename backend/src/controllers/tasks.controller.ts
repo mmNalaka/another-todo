@@ -3,7 +3,6 @@ import { zValidator } from '@hono/zod-validator'
 import type { Task, TasksList } from '@/db/schemas/tasks.schema'
 import type { AuthenticatedUser } from '@/middlewares/authenticated.mw'
 import type { ErrorCode } from '@/utils/error.utils'
-import { broadcastToList } from '@/services/websocket.service'
 
 import { getListById, getListCollaborators } from '@/db/repositories/lists.repo'
 import {
@@ -15,6 +14,7 @@ import {
   updateTask,
   updateTaskPositions,
 } from '@/db/repositories/tasks.repo'
+import { broadcastToList } from '@/services/websocket.service'
 import { createErrorResponse } from '@/utils/error.utils'
 import { factory } from '@/utils/hono.utils'
 import {
@@ -124,7 +124,7 @@ export const getTaskByIdHandler = factory.createHandlers(
       userInfo.id,
       'viewer',
     )
-    if (!isOwner && (!allowed)) {
+    if (!isOwner && !allowed) {
       return createErrorResponse(
         c,
         error || 'FORBIDDEN',
@@ -202,7 +202,7 @@ export const createTaskHandler = factory.createHandlers(
     if (!task) {
       return createErrorResponse(c, 'INTERNAL_SERVER_ERROR')
     }
-    
+
     // Since task is the return value of createTask, which returns a single task, not an array
     // If the task is part of a list, broadcast the change to all users in the list
     if (task && task.listId) {
@@ -211,7 +211,7 @@ export const createTaskHandler = factory.createHandlers(
         task,
         timestamp: Date.now(),
         userId: userInfo.id,
-        userName: userInfo.email || 'Unknown user' 
+        userName: userInfo.email || 'Unknown user',
       }
       const messageStr = JSON.stringify(eventData)
       // Ensure listId is a string before calling broadcastToList
@@ -267,7 +267,7 @@ export const updateTaskHandler = factory.createHandlers(
     if (!updatedTask) {
       return createErrorResponse(c, 'INTERNAL_SERVER_ERROR')
     }
-    
+
     // Broadcast task update event to other users
     if (updatedTask.listId) {
       const eventData = {
@@ -275,10 +275,10 @@ export const updateTaskHandler = factory.createHandlers(
         task: updatedTask,
         timestamp: Date.now(),
         userId: userInfo.id,
-        userName: userInfo.email || 'Unknown user'
+        userName: userInfo.email || 'Unknown user',
       }
       const messageStr = JSON.stringify(eventData)
-      
+
       // Broadcast the update to all users in the list
       if (typeof updatedTask.listId === 'string') {
         broadcastToList(updatedTask.listId, messageStr, userInfo.id)
@@ -378,7 +378,7 @@ export const reorderTasksHandler = factory.createHandlers(
         'Failed to update task positions',
       )
     }
-    
+
     // Only broadcast reordering events for list tasks (not for all-tasks view)
     if (!isAllTasksView) {
       const eventData = {
@@ -387,10 +387,10 @@ export const reorderTasksHandler = factory.createHandlers(
         listId,
         timestamp: Date.now(),
         userId: userInfo.id,
-        userName: userInfo.email || 'Unknown user'
+        userName: userInfo.email || 'Unknown user',
       }
       const messageStr = JSON.stringify(eventData)
-      
+
       // Broadcast the reordering to all users in the list
       broadcastToList(listId, messageStr, userInfo.id)
     }
@@ -428,7 +428,7 @@ export const deleteTaskHandler = factory.createHandlers(
     if (!deletedTask) {
       return createErrorResponse(c, 'INTERNAL_SERVER_ERROR', 'Task not deleted')
     }
-    
+
     // Broadcast task delete event to other users
     if (existingTask.listId) {
       const eventData = {
@@ -436,10 +436,10 @@ export const deleteTaskHandler = factory.createHandlers(
         taskId: id, // Use task ID directly since we know it exists
         timestamp: Date.now(),
         userId: userInfo.id,
-        userName: userInfo.email || 'Unknown user'
+        userName: userInfo.email || 'Unknown user',
       }
       const messageStr = JSON.stringify(eventData)
-      
+
       // Broadcast the deletion to all users in the list
       if (typeof existingTask.listId === 'string') {
         broadcastToList(existingTask.listId, messageStr, userInfo.id)

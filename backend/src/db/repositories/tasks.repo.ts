@@ -68,7 +68,9 @@ export async function getTaskById(taskId: string) {
     .limit(1)
     .then((res) => res[0])
 
-  if (!task) return null
+  if (!task) {
+    return null
+  }
 
   const subTasks = await db
     .select()

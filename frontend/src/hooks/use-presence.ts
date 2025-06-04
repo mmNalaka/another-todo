@@ -35,7 +35,7 @@ export function usePresence({ listId, enabled = true }: UsePresenceOptions) {
   })
 
   return {
-    users: users as PresenceUser[],
+    users: users as Array<PresenceUser>,
     isLoading,
     connectionStatus: status
   }

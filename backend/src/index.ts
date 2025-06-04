@@ -1,7 +1,7 @@
 import { serve } from '@hono/node-server'
 import pino from 'pino'
 
-import app, { injectWebSocket} from '@/app'
+import app, { injectWebSocket } from '@/app'
 import env from '@/config/env.config'
 import { runMigrations } from '@/db/migrate'
 
@@ -27,7 +27,6 @@ async function startServer() {
     const server = serve(serverConfig)
     // Inject WebSocket
     injectWebSocket(server)
-
 
     logger.info(`Server is running on port http://localhost:${port}`)
   } catch (error) {

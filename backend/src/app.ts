@@ -4,10 +4,10 @@ import { cors } from 'hono/cors'
 import { requestId } from 'hono/request-id'
 
 import { corsOptions } from '@/config/cors.config'
-import { wsAuthMiddleware } from '@/middlewares/ws-auth.mw'
+import { createWebSocketHandler } from '@/lib/websocket-handler'
 import { errorHandler } from '@/middlewares/error-handler.mw'
 import { pinoLogger } from '@/middlewares/pino-logger.mw'
-import { createWebSocketHandler } from '@/lib/websocket-handler'
+import { wsAuthMiddleware } from '@/middlewares/ws-auth.mw'
 import authRouter from '@/routes/auth.router'
 import globalRoutes from '@/routes/global.routes'
 import listsRoutes from '@/routes/lists.router'
@@ -33,9 +33,8 @@ app.get(
   wsAuthMiddleware,
   upgradeWebSocket((c) => {
     return createWebSocketHandler(c)
-  })
+  }),
 )
-
 
 // Global error handler
 app.use(errorHandler())
