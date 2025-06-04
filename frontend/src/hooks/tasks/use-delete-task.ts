@@ -31,7 +31,6 @@ export function useDeleteTask(options?: DeleteTaskOptions) {
         method: 'DELETE',
       }),
     onSuccess: (_, variables) => {
-      console.log('Task deleted successfully', variables)
       if (invalidateQueries) {
         queryClient.invalidateQueries({ queryKey: ['tasks'] })
         variables.listId &&
