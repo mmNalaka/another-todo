@@ -23,21 +23,21 @@ type TaskDeleteButtonProps = {
 export function TaskDeleteButton({ task, onSuccess }: TaskDeleteButtonProps) {
   const { t } = useLocalization()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  
+
   const { deleteTask, isPending: isDeleting } = useDeleteTask({
     onSuccess: () => {
       if (onSuccess) {
         onSuccess()
       }
-    }
+    },
   })
 
   return (
     <>
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        onClick={() => setShowDeleteConfirm(true)} 
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setShowDeleteConfirm(true)}
         className="text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/20"
         disabled={isDeleting}
       >
@@ -47,20 +47,28 @@ export function TaskDeleteButton({ task, onSuccess }: TaskDeleteButtonProps) {
           <Trash2 className="h-4 w-4" />
         )}
       </Button>
-      
+
       {/* Delete confirmation dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('tasks.delete.confirmTitle' as any)}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t('tasks.delete.confirmTitle' as any)}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {t('tasks.delete.confirmDescription' as any)}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('generic.cancel')}</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => deleteTask(task.id)}
+            <AlertDialogAction
+              onClick={() =>
+                deleteTask({
+                  id: task.id,
+                  listId: task.listId,
+                  parentId: task.parentTaskId,
+                })
+              }
               className="bg-red-500 hover:bg-red-600"
             >
               {isDeleting ? (

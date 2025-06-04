@@ -12,21 +12,35 @@ interface DeleteTaskOptions {
   errorMessage?: string
 }
 
+type Variables = {
+  id: string
+  listId: string | null
+  parentId?: string | null
+}
+
 export function useDeleteTask(options?: DeleteTaskOptions) {
   const {
     showToasts = true,
     invalidateQueries = true,
-    errorMessage = 'Failed to delete task'
+    errorMessage = 'Failed to delete task',
   } = options || {}
 
-  const { mutate, mutateAsync, ...rest } = useMutation({
-    mutationFn: (taskId: string) =>
-      authenticatedFetch<Task>(`/tasks/${taskId}`, {
+  const { mutate, mutateAsync, ...rest } = useMutation<any, Error, Variables>({
+    mutationFn: (variables) =>
+      authenticatedFetch<Task>(`/tasks/${variables.id}`, {
         method: 'DELETE',
       }),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       if (invalidateQueries) {
         queryClient.invalidateQueries({ queryKey: ['tasks'] })
+        variables.listId &&
+          queryClient.invalidateQueries({
+            queryKey: ['lits', variables.listId],
+          })
+        variables.parentId &&
+          queryClient.invalidateQueries({
+            queryKey: ['tasks', variables.parentId],
+          })
       }
 
       if (showToasts) {
@@ -39,7 +53,7 @@ export function useDeleteTask(options?: DeleteTaskOptions) {
     },
     onError: (err) => {
       console.error('Task deletion error:', err)
-      
+
       if (showToasts) {
         toast.error(errorMessage)
       }
