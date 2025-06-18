@@ -1,4 +1,4 @@
-# Ubiquiti Todo
+# Another ToDo app
 
 http://just-do-app-6xrllj-12551e-157-180-29-12.traefik.me/
 [Live Demo](http://just-do-app-6xrllj-12551e-157-180-29-12.traefik.me/)
