@@ -1,12 +1,26 @@
-# Another ToDo app
+# 📝 another-todo
 
-http://just-do-app-6xrllj-12551e-157-180-29-12.traefik.me/
-[Live Demo](http://just-do-app-6xrllj-12551e-157-180-29-12.traefik.me/)
+A modern, full-featured to-do app built with simplicity and productivity in mind.  
+Supports nested subtasks, real-time collaboration, markdown descriptions, and more — perfect for individuals or teams managing complex task workflows.
 
+## ✨ Features
 
-## Description
+- ✅ Create and manage tasks with due dates and priorities  
+- 🧩 Support for nested subtasks (deep hierarchy)  
+- 📄 Rich markdown-based task descriptions  
+- 🔄 Real-time sync and collaboration (CRDT-ready)  
+- 🧠 Smart task types (e.g. work, food, errands)  
+- 📋 Multiple task lists with drag-and-drop ordering  
+- 🔌 Offline-first with automatic conflict resolution  
+- 🔐 Secure, scalable API backend
 
-## User stories
+## 🛠️ Tech Stack
+
+- **Frontend**: (React/Vue/Svelte/etc. – _update this if applicable_)  
+- **Backend**: Node.js + Hono.js  
+- **Database**: PostgreSQL  
+- **Sync**: CRDT (Yjs or Automerge)
+
 
 ### Core Features
 
